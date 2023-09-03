@@ -10,7 +10,7 @@ const {
 	try {
 		await driver.get('https://www.google.com/');
 		await driver.findElement(By.xpath("//textarea[@id='APjFqb']")).sendKeys('bradley cooper venice film festival', Key.RETURN);
-		await driver.wait(until.titleIs('bradley cooper venice film festival'), 5000);
+		await driver.wait(until.titleIs('bradley cooper venice film festival - Google Search'), 5000);
 	} finally {
 		await driver.quit();
 	}
