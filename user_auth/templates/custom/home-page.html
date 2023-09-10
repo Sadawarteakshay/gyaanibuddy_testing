@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Home</title>
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- custom css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main-home-page.css' %}">
+    <!-- icon lib. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- font family -->
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;700&display=swap" rel="stylesheet">
+    <!-- owl carousel -->
+    <link rel="stylesheet" href="{% static 'owlcarousel/assets/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'owlcarousel/assets/owl.theme.default.min.css' %}">
+</head>
+
+<body>
+
+    <!---------------------------------------- Navbar ---------------------------------------->
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+            <img src="{% static 'images/gb-logo.png' %}" width="45" height="45"
+                class="d-inline-block align-top bg-light">
+            <a class="navbar-brand pl-md-3" href="{% url 'index_home' %}">GyaaniBuddy</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse text-center" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'index_home' %}">Home <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user-home' %}">User Home</a>
+                    </li>
+                    {% comment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'quiz-home' %}">Quiz Home</a>
+                    </li>
+                    {% endcomment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user-dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Blogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Other things</a>
+                    </li>
+                </ul>
+                <form class="text-center mt-md-0">
+                    <ul class="navbar-nav mr-auto">
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_logout' %}" class="">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_login' %}" class="">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_signup' %}" class="">Sign Up</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </form>
+            </div>
+        </nav>
+    </header>
+    
+    <!---------------------------------------- Navbar ends ---------------------------------------->
+
+
+
+    <!--------------------------- Main Body --------------------------------->
+    <main>
+        <div class="top-card text-center text-white">
+            <h1>Be the greatest Gyaani ever!</h1>
+            <h3>Platform for <b> dedicated learners.</b></h3>
+            {% comment %}
+            <a class="btn btn-lg btn-dark" href="{% url 'quiz-home' %}">Get Started</a>
+            {% endcomment %}
+        </div>
+
+        <div class="weak  info-card">
+            <div class="row">
+                <div class="col-sm-7">
+                    <img src="{% static 'images/main-home-page/weak.jpg' %}" width="100%">
+                </div>
+                <div class="col-sm-5 container card-content text-center">
+                    <h2 class="font-weight-bold">Defeat your weaknesses!</h2>
+                    <h6 class="brief">GyaaniQuiz helps you optimize your studying, by recommending you harder quizes and
+                        concepts in perfect interval of time according to your grasping speed.</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="knowledge info-card">
+            <div class="row">
+                <div class="col-sm-7 d-sm-none">
+                    <img src="{% static 'images/main-home-page/person-working.jpg' %}" width="100%">
+                </div>
+                <div class="col-sm-5 container card-content">
+                    <h2 class="font-weight-bold">Judge your knowledge</h2>
+                    <h6 class="brief">Take a quiz on the topic of your choice... <br>We are here to help.</h6>
+                </div>
+                <div class="col-sm-7 hidden-xs">
+                    <img src="{% static 'images/main-home-page/knowledge.jpg' %}" width="100%">
+                </div>
+            </div>
+        </div>
+
+        <div class="teacher info-card">
+            <div class="row">
+                <div class="col-sm-7">
+                    <img src="{% static 'images/main-home-page/teachers.jpg' %}" width="100%">
+                </div>
+                <div class="col-sm-5 container card-content">
+                    <h5 class="font-weight-bold">TEACHERS</h5>
+                    <h2 class="font-weight-bold">Empower your students!</h2>
+                    <h6 class="brief">GyaaniQuiz helps you optimize your studying, by recommending you harder quizes and
+                        concepts in perfect interval of time according to your grasping speed.</h6>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- quizes flashcards -->
+        <div class=" justify-content-center">
+            <div class="" id="flashcards">
+                <div class=" pb-2 w-100 text-center h3 font-weight-bold">Most visited and attempted quiz by the users!
+                </div>
+                <div class="conatiner">
+                    <div class="row pt-2 pr-5 pl-5 pb-5 row">
+                        <div class="col-12 col-sm-4 ">
+                            <button class="btn btn-outline-dark">Data Structures</button>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <button class="btn btn-outline-dark">Number Theory</button>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <button class="btn btn-outline-dark">General Knowledge</button>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <button class="btn btn-outline-dark">Finance</button>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <button class="btn btn-outline-dark">Game Theory</button>
+                        </div>
+                        <div class="col-12 col-sm-4 ">
+                            <button class="btn btn-outline-dark">Biology</button>
+                        </div>
+                        <div class="text-right w-100 font-weight-bold pt-sm-4 pt-3">
+                            <a href="" alt="Explore more quizes"
+                                class="font-italic text-dark text-decoration-none">Explore more...</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- why join gyaanibuddy -->
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="card-content login-benefits">
+            <h2 class="w-100 text-center font-weight-bold pt-sm-4 pb-sm-1 pt-5">Why signup for GyaaniQuiz? </h2>
+        </div>
+        <div class="pb-sm-5 login-benefits">
+            <div class="row p-sm-0 p-4">
+                <div class="col-sm-5 pl-5 m-auto">
+                    <img src="{% static 'images/main-home-page/person-working.jpg' %}" width="100%">
+                </div>
+                <div class="col-sm-7 text-left card-content ">
+                    <ul class="list-unstyled pt-4 p-sm-0">
+                        <li> <i class="fa fa-check pr-2"></i>Have your own dashboard to check your whole progress</li>
+                        <li> <i class="fa fa-check pr-2"></i>SignUp lets you save your quizes and results in your
+                            profile</li>
+                        <li> <i class="fa fa-check pr-2"></i>Look at your growth through your performance chart</li>
+                        <li> <i class="fa fa-check pr-2"></i>Create your own quiz and invite others to attempt those
+                        </li>
+                        <li> <i class="fa fa-check pr-2"></i>Compete with your fellow gyaani buddies and monitor their
+                            performance through their dashboards</li>
+                        <li> <i class="fa fa-check pr-2"></i>Look back to your performances</li>
+                        <li> <i class="fa fa-check pr-2"></i>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- feedback / comment of user -->
+        <div class="" id="feedback">
+            <div class="">
+
+                <div class="row ">
+                    <h5 class=" font-weight-bold container">What our users have to say about us...</h5>
+                </div>
+
+                <div class="text-center pl-4 pr-4 owl-carousel owl-theme" id="comment-img">
+                    <div class="user-comment  p-3">
+                        <div>
+                            <h4 class="font-weight-bold container" style="opacity: 1;">"When it came to studying I was a
+                                mess. Now I am at this new school and they introduced me to GyaaniBuddy. I am no longer
+                                stressed when it comes to studying for assignments. THANK YOU GYAANIBUDDY!!!"</h4>
+                            <h6><i> - Name XYZ, Student</i></h6>
+                        </div>
+                    </div>
+
+                    <div class="user-comment p-3">
+                        <div>
+                            <h4 class="font-weight-bold container" style="opacity: 1;">"Lorem ipsum dolor sit amet,
+                                consectetur adipiscing elit. Sed interdum nulla eu tellus accumsan, eu lobortis diam
+                                posuere. Cras in egestas quam. Vivamus ullamcorper varius sollicitudin. Mauris vel neque
+                                vitae leo tempor fringilla."</h4>
+                            <h6><i> - Name XYZ, Student</i></h6>
+                        </div>
+                    </div>
+
+                    <div class="user-comment p-3">
+                        <div>
+                            <h4 class="font-weight-bold container" style="opacity: 1;">"Donec lacinia sed diam et
+                                tempus. Ut congue convallis porta. Donec a risus accumsan tortor mollis aliquam. Nullam
+                                non nisi neque. Suspendisse in turpis ut lectus auctor ornare eu faucibus lorem. Morbi
+                                tincidunt sodales neque."</h4>
+                            <h6><i> - Name XYZ, Student</i></h6>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!---------------------------------------- footer ---------------------------------------->
+    <footer class="p-3 text-white pt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3 col-6">
+                    <h6 class="border-bottom pb-1 pt-3">Company</h6>
+                    <ul class="list-unstyled">
+                        <li>About Us</li>
+                        <li>Careers</li>
+                        <li>Contact Us</li>
+                    </ul>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <h6 class="border-bottom pb-1 pt-3">Connect</h6>
+                    <ul class="list-unstyled">
+                        <li>Instagram</li>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                    </ul>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <h6 class="border-bottom pb-1 pt-3">Security</h6>
+                    <ul class="list-unstyled">
+                        <li>Privacy policy</li>
+                        <li>Terms of use</li>
+                    </ul>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <h6 class="border-bottom pb-1 pt-3">Resources</h6>
+                    <ul class="list-unstyled">
+                        <li>Blog</li>
+                        <li>Join Us</li>
+                        <li>Tech news</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <footer class="text-center text-white p-1">
+        Copyright &copy; Gyaani Buddy | All rights reserved
+    </footer>
+    <!---------------------------------------- footer ends ---------------------------------------->
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script> -->
+    <script src="{% static 'owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'owlcarousel/owl.carousel.js' %}"></script>
+
+    <script>
+        $('.owl-carousel').owlCarousel({
+            autoplay: true,
+            autoplayHoverPause: true,
+            items: 4,
+            nav: true,
+            dots: true,
+            loop: true,
+            responsiveClass: true,
+            responsive: {
+                0: {
+                    items: 1,
+                    nav: true
+                },
+                600: {
+                    items: 1,
+                    nav: true
+                },
+                1000: {
+                    items: 1,
+                    nav: true,
+                    loop: true
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

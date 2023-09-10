@@ -1,0 +1,1541 @@
+{% extends 'gb_base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% block extraHead %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://use.fontawesome.com/f244c27795.js"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+    <link rel = "icon" href = https://media-exp1.licdn.com/dms/image/C560BAQEzFtPtp4eqgw/company-logo_200_200/0/1603725751213?e=2159024400&v=beta&t=HQfckUYBeY_rgNSrKMKLvjc4A1exwCfRCU8FpZrz2Y4 
+    type = "image/x-icon"> 
+</head>
+{% endblock %}
+
+{% block extraCss %}
+<style>
+
+.ContributionCalendar-day[data-level="0"] {
+    fill:gainsboro;
+}
+.ContributionCalendar-day[data-level="1"] {
+    fill:lightgreen;
+}
+.ContributionCalendar-day[data-level="2"] {
+    fill:greenyellow;
+}
+.ContributionCalendar-day[data-level="3"] {
+    fill:green;
+}
+.ContributionCalendar-day[data-level="4"] {
+    fill: darkgreen;
+}
+
+.image_cropper{
+  width: 80px !important;
+  height: 80px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 10% !important;
+}
+
+.card {
+    box-shadow: 0 0 10px 3px rgba(100, 100, 100, 0.26);
+}
+.card-no-shadow{
+    box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.26);
+}
+
+.table>tbody>tr.no-border>td,
+.table>tbody>tr.no-border>th {
+  border: none!important;
+}
+
+.input-group-text{
+    background-color: #ccf1f5;
+}
+
+@media screen and (max-width: 992px) {
+    .modal_footer_button{
+        width: 100%;
+        margin-left: 10%;
+        margin-right: 10%;
+        margin-top: 3%;
+        margin-bottom: 3%;
+    }
+    .modal_field_large_screen {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 992px){
+    .modal_field_small_screen{
+        display: none;
+    }
+}
+
+.gyaani_profile_social_handles:hover{
+    transform: scale(1.5);
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block extraScript %}
+<script>
+function callfun(){
+  move('assjs');
+  move('blogjs');
+  function move(name) {
+    i = 1;
+    var elem = document.getElementById(name);
+    var width = 0;
+    if (elem.id=='assjs') {
+        max_width_assignment = document.getElementById(name).innerHTML.replace(/\D/g, "");;
+        // console.log(max_width_assignment);
+        function frame() 
+        {
+            if (width > max_width_assignment) 
+            {
+                clearInterval(id);
+                i = 0;
+            }
+            else 
+            {
+                width++;
+                elem.style.width = width + "%";
+            }
+        }
+    }
+    else {
+        max_width_blog = document.getElementById(name).innerHTML.replace(/\D/g, "");;
+        // console.log(max_width_blog);
+        function frame() 
+        {
+            if (width > max_width_blog) 
+            {
+                clearInterval(id);
+                i = 0;
+            }
+            else 
+            {
+                width++;
+                elem.style.width = width + "%";
+            }
+        }
+    }
+    var id = setInterval(frame, 10);
+  }
+}
+
+document.addEventListener("scroll", inView);
+function inView() {
+  if (document.getElementById("animated_progress_bar_1").getBoundingClientRect().bottom <= window.innerHeight) {
+    callfun(); 
+      // uncomment below if you only want it to notify once
+      document.removeEventListener("scroll", inView);
+  }
+  if (document.getElementById("animated_progress_bar_2").getBoundingClientRect().bottom <= window.innerHeight) {
+    callfun(); 
+      // uncomment below if you only want it to notify once
+      document.removeEventListener("scroll", inView);
+  }
+}
+
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+
+var insti_list = {{ list_of_institutes|safe }}; 
+function validateForm() {
+  var x = document.forms["edit_form"]["institute"].value;
+  var i;
+  if (insti_list.indexOf(x)>=0) {
+    alert("Form submitted successfully");
+    document.edit_form.submit();
+    return true;
+  }
+  else{
+    alert("Please select correct college name ");
+    console.log("Hii in else");
+  }
+}
+
+</script>
+
+<body style="background-color: #f3f7f7;">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-3 text-center text-md-start" style="background-color: #f3f7f7">
+                <br>
+                <br>
+                {% if user.profile_image %}
+                    <img src="{{user.profile_image.url}}" alt="Image present" width="150" height="150px"
+                                class="rounded-circle">
+                {% else %}
+                    <img src="https://www.bootdey.com/img/Content/avatar/avatar7.png" alt="Default Image"
+                                class="rounded-circle" width="150">
+                {% endif %}
+                <!-- <img src="D:/Gyaanibuddy/a.png" width="200px" class="image_cropper"> -->
+                <br>
+                {% if user.first_name and user.last_name %}
+                <h1>{{user.first_name}}</h1>
+                <h2>{{user.last_name}}</h2>
+                {% endif %}
+                <p>{{user.username}}</p>
+                
+                <br>
+
+                {% if request.user.is_authenticated %}
+                {% if user == request.user %}
+                <a href="#editintroModal" data-bs-toggle="modal" style="color:#01BACF; text-decoration: none;" id="update_user_button">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                        </svg>
+                        <h7>Edit Info</h7>
+                    </span>
+                </a>
+                {% endif %}
+                {% if not user == request.user %}
+                <form action="{% url 'user-follow' user.slug %}" method="POST" id="follow_unfollow_form">
+                    {% csrf_token %}
+                    {% if followed %}
+                        <button type="submit" value="{{user.slug}}" name="follow_unfollow_slug" method="POST" class="btn btn-primary" id="follow-unfollow-btn" style="color: white; background-color: #01BACF; border: none;">Unfollow</button>
+                    {% else %}
+                        <button type="submit" value="{{user.slug}}" name="follow_unfollow_slug" method="POST" class="btn btn-primary" id="follow-unfollow-btn" style="color:white; background-color: #01BACF; border: none;">Follow</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+                {% endif %}
+             
+                <form name="edit_form" onsubmit="event.preventDefault(); validateForm();" method="post" id="update-user" enctype="multipart/form-data">
+                <div class="modal fade" style="z-index: 100001;" id="editintroModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="z-index: 100002;">
+                      <div class="modal-content">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLabel">
+                                <svg class="m-2" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                </svg>
+                                Edit Info
+                            </h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body" style="border: none !important;">
+
+                            <p>Note: Fields marked with * are compulsory</p>
+                        
+                            <h5 class="text-center mt-3">Edit Personal Info</h5>
+                            <div class="mb-3 px-3">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>*First and last name</b></p>
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen">*First and last name</span>
+                                    <input name="first_name" type="text" value="{{ user.first_name }}" style="width:10px;" aria-label="First name" placeholder="Tushar" class="form-control" required>
+                                    <!-- {{form.first_name|add_class:"form-control"}} -->
+                                    <input name="last_name" type="text" value="{{ user.last_name }}" aria-label="Last name" placeholder="Bapecha" class="form-control" required>
+                                    <!-- {{form.last_name|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+                        
+                            <div class="mb-3 px-3">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>About Myself</b></p>
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen" id="basic-addon1">About Myself</span>
+                                    <textarea name="about_me" value="{{ user.about_me }}" class="form-control" aria-label="With textarea">{% if user.last_name %} {{user.about_me}} {% else %} Student {% endif %}</textarea>
+                                    <!-- {{form.about_me|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+                        
+                            <div class="mb-3 px-3">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>*College</b></p>
+                                <div class="input-group" id="studyplace">
+                                    <label class="input-group-text modal_field_large_screen" for="inputGroupSelect01">*College</label>
+                                    <input type="text" value="{{ user.institute.name }}" list="intitute_names" name="institute" class="form-select" id="inputGroupSelect01" required>
+                                        <datalist id="intitute_names" >
+                                        {% for i in institute_list %}
+                                            <option value="{{i}}">{{ i }}</option>
+                                        {% endfor %}
+                                        </datalist>
+                                    <!-- {{form.institute|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+                        
+                            <!-- <div class="mb-3 px-3">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Country/City</b></p>
+                                <div class="input-group">
+                                    <label class="input-group-text modal_field_large_screen" for="inputGroupSelect01">Country/City</label>
+                                    <select class="form-select" id="inputGroupSelect01">
+                                    <option selected>Select Country</option>
+                                    <option value="1">India</option>
+                                    <option value="2">United States</option>
+                                    <option value="3">Canada</option>
+                                    </select>
+                                    <select class="form-select" id="inputGroupSelect02" style="width: 30%;">
+                                        <option selected>Select City</option>
+                                        <option value="1">Mumbai</option>
+                                        <option value="2">Pune</option>
+                                        <option value="3">Akola</option>
+                                        <option value="3">Nagpur</option>
+                                        <option value="3">Delhi</option>
+                                        <option value="3">Surat</option>
+                                        <option value="3">Amravati</option>
+                                    </select>
+                                </div>
+                            </div> -->
+
+                            <div class="mb-3 px-3">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Upload profile pic</b></p>
+                                <div class="input-group">
+                                    <label class="input-group-text modal_field_large_screen" for="inputGroupFile01">Upload profile pic</label>
+                                    <input name="profile_image" type="file" class="form-control" id="inputGroupFile01">
+                                </div>
+                            </div>
+                            
+                            <hr class="text-center m-5" > 
+                             
+                            <h5 class="text-center">Edit Contact Info</h5>
+                            <div class="mb-3 px-4">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Phone Number</b></p>
+                                <div class="input-group">
+                                    <label class="input-group-text modal_field_large_screen" for="inputGroupSelect01">Phone Number</label>
+                                    <select class="form-select" id="inputGroupSelect01">
+                                        <option selected>+91</option>
+                                        <option value="1">022</option>
+                                        <option value="2">0251</option>
+                                    </select>
+                                    <input name="phone_number" value="{{ user.phone_number }}" style="width: 50%;" type="text" aria-label="First name" placeholder="9214569871" class="form-control">                               
+                                    <!-- {{form.phone_number|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+
+                            <div class="mb-3 px-4">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Email</b></p>
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen" id="basic-addon1">Email</span>
+                                    <input name="email" type="text" value="{{ user.email }}" class="form-control" placeholder="tushar.bapecha@somaiya.edu" aria-label="Username" aria-describedby="basic-addon1">
+                                    <!-- {{form.email|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+
+                            <div class="mb-3 px-4">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Linkedin URL</b></p>
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen" id="basic-addon1">Linkedin URL</span>
+                                    <input name="linkedin_link" type="text" value="{{ user.linkedin_link }}" class="form-control" placeholder="https://www.linkedin.com/company/gyaani-buddy" aria-label="Username" aria-describedby="basic-addon1">
+                                    <!-- {{form.linkedin_link|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 px-4">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Instagram URL</b></p>  
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen" id="basic-addon1">Instagram URL</span>
+                                    <input name="instagram_link" type="text" value="{{ user.instagram_link }}" class="form-control" placeholder="https://www.instagram.com/gyaanibuddy/" aria-label="Username" aria-describedby="basic-addon1">
+                                    <!-- {{form.instagram_link|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3 px-4">
+                                <p class="modal_field_small_screen" style="margin: 0%!important; text-align: left!important; color: #01BACF;"><b>Facebook URL</b></p>  
+                                <div class="input-group">
+                                    <span class="input-group-text modal_field_large_screen" id="basic-addon1">Facebook URL</span>
+                                    <input name="facebook_link" type="text" value="{{ user.facebook_link }}" class="form-control" placeholder="https://www.facebook.com/GyaaniBuddyFB/" aria-label="Username" aria-describedby="basic-addon1">
+                                    <!-- {{form.facebook_link|add_class:"form-control"}} -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer" style="border: none;">
+                            <button type="button" class="btn btn-secondary modal_footer_button" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" id="submit_form_button" class="btn btn-primary modal_footer_button" style="background-color: #01BACF; border: #01BACF;">Save changes</button>
+                        </div>
+
+                      </div>
+                    </div>
+                </div>
+                </form>
+
+                <br>
+                {% if user.about_me %}
+                <span>
+                    <svg color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    <h7>{{user.about_me}}</h7>
+                </span>
+                <br>
+                {% endif %}
+                <!-- <span>
+                    <svg color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694L1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
+                        <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
+                    </svg>
+                    <h7>Mumbai, India</h7>
+                </span>
+                <br> -->
+                <br>
+   
+                {% if user.institute %}
+                <h5><b>Institute:</b></h5>
+                <h6>{{user.institute}}</h6>
+                {% endif %}   
+                <br>
+
+                <span>
+                    <svg color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                      </svg>
+                      <a href="{% url 'user-followers' user.slug %}" style="text-decoration: none;" ><h7 style="color: black;">Followers <b>{{user.followers.all|length}}</b> </h6></a>
+                </span>
+                <br>
+                <span>
+                    <svg color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                        <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                      </svg>
+                      <a href="{% url 'user-followers' user.slug %}" style="text-decoration: none;" ><h7 style="color: black;">Following <b>{{user.following.all|length}}</b> </h6></a>
+                </span>
+                <br>
+                <br>
+                <h6>Reach me at: </h6>
+                <span>
+                    {% if user.linkedin_link %}
+                    <a class="m-2 ms-0" href="{{user.linkedin_link}}" style="text-decoration:none !important;"><svg class="gyaani_profile_social_handles" color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                    </svg></a>
+                    {% endif %}
+
+                    {% if user.facebook_link %}
+                    <a class="m-2" href="{{user.facebook_link}}" style="text-decoration:none !important;"><svg class="gyaani_profile_social_handles" color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+                    </svg></a>
+                    {% endif %}
+
+                    {% if user.instagram_link %}
+                    <a class="m-2" href="{{user.instagram_link}}" style="text-decoration:none !important;"><svg class=" gyaani_profile_social_handles" color="#01BACF" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                        <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+                    </svg></a>
+                    {% endif %}
+
+                </span>
+            </div>
+
+
+            <div class="col-md-9" style="background-color:#f3f7f7;">
+                <!-- <br><br>
+                <div class="card">
+                    <h5 class="card-title m-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
+                            <path d="M9.669.864L8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193l.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
+                            <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
+                        </svg>
+                        Badges
+                    </h5>
+                    <svg class="m-3" id="Layer_1" enable-background="new 0 0 512 512" height="100" viewBox="0 0 512 512" width="100" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <g>
+                                <path d="m149.797 11.642h106.203v193.734h-106.203z" fill="#ff4949"/>
+                                <path d="m256 11.642h107.008v193.734h-107.008z" fill="#e50148"/>
+                            </g>
+                            <path d="m217.85 11.642v193.734h38.15l10.386-115.069-10.386-78.665z" fill="#e50148"/>
+                            <path d="m256 11.642h38.955v193.734h-38.955z" fill="#bf065b"/>
+                            <path d="m134.478 0c-8.284 0-15 6.716-15 15s6.716 15 15 15h121.522l10.386-15-10.386-15z" fill="#ffd74a"/>
+                            <path d="m392.522 15c0-8.284-6.716-15-15-15h-121.522v30h121.522c8.285 0 15-6.716 15-15z" fill="#fdbf00"/>
+                            <g>
+                                <path d="m255.995 133.138c-3.873 0-7.586 1.538-10.324 4.276l-46.924 46.924h-66.377c-8.063 0-14.601 6.537-14.601 14.601v66.377l-46.923 46.924c-5.702 5.702-5.702 14.946 0 20.648l46.924 46.924v66.377c0 8.064 6.537 14.601 14.601 14.601h66.367l46.934 46.934c2.738 2.738 6.451 4.276 10.324 4.276h.005l28.238-189.431-28.239-189.43c-.001 0-.003-.001-.005-.001z" fill="#fdbf00"/>
+                                <path d="m441.154 312.24-46.933-46.934v-66.367c0-8.064-6.537-14.601-14.601-14.601h-66.378l-46.923-46.924c-2.737-2.737-6.448-4.275-10.319-4.276v378.862c3.871-.001 7.583-1.539 10.319-4.276l46.933-46.933h66.368c8.063 0 14.601-6.537 14.601-14.601v-66.367l46.933-46.934c5.703-5.702 5.703-14.947 0-20.649z" fill="#ff9102"/>
+                            </g>
+                            <g>
+                                <path d="m245.671 219.837-22.783 22.783h-32.235c-8.064 0-14.601 6.537-14.601 14.601v32.236l-22.783 22.783c-2.739 2.738-4.277 6.452-4.277 10.324s1.538 7.586 4.277 10.324l22.783 22.783v32.236c0 8.064 6.537 14.601 14.601 14.601h32.225l22.793 22.793c2.851 2.851 6.587 4.276 10.324 4.276h.005l19.404-109.206-19.404-104.81c-3.738-.001-7.477 1.424-10.329 4.276z" fill="#ffd74a"/>
+                            </g>
+                            <path d="m358.731 312.24-22.792-22.792v-32.227c0-8.064-6.537-14.601-14.601-14.601h-32.237l-22.783-22.783c-2.85-2.85-6.584-4.275-10.319-4.276v214.016c3.735-.001 7.47-1.427 10.319-4.276l22.792-22.793h32.227c8.063 0 14.601-6.537 14.601-14.601v-32.227l22.792-22.793c5.703-5.701 5.703-14.945.001-20.647z" fill="#fdbf00"/>
+                        </g>
+                        <text x=125 y=350 font-size="85" font-weight="bold">Novice</text>
+                    </svg>
+                </div> -->
+
+                <br><br>
+                <div class="card">
+                    <h5 class="card-title m-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stars" viewBox="0 0 16 16">         
+                        <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.734 1.734 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.734 1.734 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.734 1.734 0 0 0 3.407 2.31l.387-1.162zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L10.863.1z"/>
+                      </svg> Ratings</h5>
+                    <div>
+                        <span>
+                            {% if rewards.blog_points > 10 %}
+                            <svg width="91.67" height="100" class="mx-4 my-2">                                
+                                <g>
+                                    <defs>
+                                        <linearGradient id="golden"  x1="52.5" y1="2.5" x2="52.5" y2="102.5" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0" stop-color="#f9d641"></stop>
+                                            <stop offset="1" stop-color="#f8bc36"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                    <path fill=url(#golden) d="M98.28277,47.36h0c-.18459-9.382-.87983-17.797-2.0917-19.8595-1.02214-1.742-6.1721-5.43476-12.6195-9.45853L66.3804,8.23311C59.94162,4.89541,54.4699,2.5,52.49778,2.5c-2.42987,0-10.17687,3.63131-18.49789,8.18049-6.30411,3.44623-12.9328,7.41557-17.83631,10.74623-3.85037,2.61278-6.63864,4.828-7.35893,6.07393-.73574,1.27216-1.28014,4.91124-1.63613,9.67794l-.00014-.00008c-.45195,6.03951-.599,13.88935-.43933,21.10033.20233,9.11082.89243,17.18541,2.07561,19.22049C11.66541,82.42328,46.78277,102.5,52.49778,102.5c2.374,0,9.82245-3.47115,17.92388-7.87722,6.4-3.48081,13.19866-7.5418,18.23618-10.9459l-.00046-.00026c3.93694-2.6605,6.80064-4.91944,7.53385-6.17728.72907-1.2482,1.27024-4.80557,1.62881-9.48065l-.00014-.00008C98.269,62.13222,98.42408,54.47227,98.28277,47.36Z" transform="translate(-6.66667 -2.5)">
+                                    </path>
+                                </g>
+
+                                <g>
+                                    <svg x=30 y=20 xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                        <path d="M13.498.795l.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                                    </svg>
+                                </g>
+                                
+                                <g>
+                                    <svg id = "svgelem" x=10 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.blog_points > 100 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>
+                                    <svg id = "svgelem" x=21 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.blog_points > 250 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>
+                                    <svg id = "svgelem" x=32 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.blog_points > 500 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>    
+                                    <svg id = "svgelem" x=43 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.blog_points > 1000 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>                                 
+                                    <svg id = "svgelem" x=54 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.blog_points > 2000 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="black" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+
+                                <text x=25 y=65>Blogs</text>
+                            </svg>
+                            {% else %}
+                            <p class="text-center" style="color: gray;">Contribute to earn stars!!!</p>
+                            {% endif %}
+
+                            {% if rewards.assignment_points > 10 %}
+                            <svg width="91.67" height="100" class="mx-4 my-2">                                
+                                <g>
+                                    <defs>
+                                        <linearGradient id="golden"  x1="52.5" y1="2.5" x2="52.5" y2="102.5" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0" stop-color="#f9d641"></stop>
+                                            <stop offset="1" stop-color="#f8bc36"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                    <path fill=url(#golden) d="M98.28277,47.36h0c-.18459-9.382-.87983-17.797-2.0917-19.8595-1.02214-1.742-6.1721-5.43476-12.6195-9.45853L66.3804,8.23311C59.94162,4.89541,54.4699,2.5,52.49778,2.5c-2.42987,0-10.17687,3.63131-18.49789,8.18049-6.30411,3.44623-12.9328,7.41557-17.83631,10.74623-3.85037,2.61278-6.63864,4.828-7.35893,6.07393-.73574,1.27216-1.28014,4.91124-1.63613,9.67794l-.00014-.00008c-.45195,6.03951-.599,13.88935-.43933,21.10033.20233,9.11082.89243,17.18541,2.07561,19.22049C11.66541,82.42328,46.78277,102.5,52.49778,102.5c2.374,0,9.82245-3.47115,17.92388-7.87722,6.4-3.48081,13.19866-7.5418,18.23618-10.9459l-.00046-.00026c3.93694-2.6605,6.80064-4.91944,7.53385-6.17728.72907-1.2482,1.27024-4.80557,1.62881-9.48065l-.00014-.00008C98.269,62.13222,98.42408,54.47227,98.28277,47.36Z" transform="translate(-6.66667 -2.5)">
+                                    </path>
+                                </g>
+                                <g>
+                                    <svg x=30 y=25 xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                                        <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                                      </svg>
+                                </g>
+ 
+                                <g>
+                                    <svg id = "svgelem" x=10 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.assignment_points > 100 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>
+                                    <svg id = "svgelem" x=21 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.assignment_points > 250 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>
+                                    <svg id = "svgelem" x=32 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.assignment_points > 500 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>    
+                                    <svg id = "svgelem" x=43 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.assignment_points > 1000 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="white" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+                                
+                                <g>                                 
+                                    <svg id = "svgelem" x=54 y=68 width = "30" height = "30" xmlns = "http://www.w3.org/2000/svg">
+                                        {% if rewards.assignment_points > 2000 %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                        18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                        9.9,6.9 13.755,6.9" 
+                                                fill="black"/>
+                                        {% else %}
+                                                <polygon points="15,3.213 16.242,6.9 20.1,6.9 17.013,9.21
+                                                                18.126,12.9 15,10.713 11.871,12.9 12.984,9.213
+                                                                9.9,6.9 13.755,6.9" 
+                                                fill="black" stroke="black" stroke-width="0.7" fill-opacity="0.0"/>
+                                        {% endif %}
+                                    </svg>
+                                </g>
+
+                                <text x=7 y=65 font-size="14">Assignments</text>
+                            </svg>
+                            {% endif %}
+
+                      </span>
+
+                      <br>
+                      <br>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="card">
+                    <h5 class="card-title m-3">
+                        <svg font-weight="bold" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                            <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z"/>
+                            <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/>
+                            <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                         Progress Report
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card-no-shadow mx-4 my-3 py-2">
+                                <h5 class="mx-3 my-2">Blogs</h5>
+                                {% if rewards.blog_points < 10 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 10|sub:rewards.blog_points }} more points to be eligible for badge!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|mul:10|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/10</b></p>
+                                {% elif rewards.blog_points < 100 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 100|sub:rewards.blog_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/100</b></p>
+                                {% elif rewards.blog_points < 250 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 250|sub:rewards.blog_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|intdiv:2.5|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/250</b></p>
+                                {% elif rewards.blog_points < 500 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 500|sub:rewards.blog_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|intdiv:5|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/500</b></p>
+                                {% elif rewards.blog_points < 1000 %}    
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 1000|sub:rewards.blog_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|intdiv:10|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/1000</b></p>
+                                {% elif rewards.blog_points < 2000 %}    
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 2000|sub:rewards.blog_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="blogjs">
+                                            <b>
+                                                {{ rewards.blog_points|intdiv:20|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.blog_points}}/2000</b></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-no-shadow mx-4 my-3 py-2">
+                                <h5 class="mx-3 my-2">Assignments</h5>
+                                {% if rewards.assignment_points < 10 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 10|sub:rewards.assignment_points }} more points to be eligible for badge!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|mul:10|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/10</b></p>
+                                {% elif rewards.assignment_points < 100 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 100|sub:rewards.assignment_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/100</b></p>
+                                {% elif rewards.assignment_points < 250 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 250|sub:rewards.assignment_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|intdiv:2.5|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/250</b></p>
+                                {% elif rewards.assignment_points < 500 %}
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 500|sub:rewards.assignment_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|intdiv:5|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/500</b></p>
+                                {% elif rewards.assignment_points < 1000 %}    
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 1000|sub:rewards.assignment_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|intdiv:10|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/1000</b></p>
+                                {% elif rewards.assignment_points < 2000 %}    
+                                    <p style="margin: 0%; color:gray;" class="mx-3 fs-6">
+                                        {{ 2000|sub:rewards.assignment_points }} more points to get the next star!
+                                    </p>
+                                    <div class="progress mx-3" id="animated_progress_bar_1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="background-color:#01BACF; color: black;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" id="assjs">
+                                            <b>
+                                                {{ rewards.assignment_points|intdiv:20|add:1 }}%
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <p class="mx-3 my-2">Points: <b>{{rewards.assignment_points}}/2000</b></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+
+                <br><br>
+
+                <div class="card">
+                    <h5 class="card-title m-3">
+                        <svg viewBox="0 0 48 48" width="20" height="20" class="section-card-icon ui-svg-icon" fill="currentColor">
+                            <path d="M36 6h-2c0-2.2-1.8-4-4-4H18c-2.2 0-4 1.8-4 4h-2c-3.3 0-6 2.7-6 6v28c0 3.3 2.7 6 6 6h24c3.3 0 6-2.7 6-6V12c0-3.3-2.7-6-6-6zM18 6h12v4H18V6zm20 34c0 1.1-.9 2-2 2H12c-1.1 0-2-.9-2-2V12c0-1.1.9-2 2-2h2c0 2.2 1.8 4 4 4h12c2.2 0 4-1.8 4-4h2c1.1 0 2 .9 2 2v28z"></path>
+                            <path d="M13 20h22v4H13zm0 11h22v4H13z"></path>
+                        </svg>
+                        Contributions
+                    </h5>
+                    <!-- <br> -->
+                    <!-- <div class="container"> -->
+                        <!-- <div class="js-calendar-graph mx-md-2 mx-3 d-flex flex-column flex-items-end flex-xl-items-center pt-1 is-graph-loading graph-canvas ContributionCalendar height-full text-center" data-graph-url="/users/m607stars/contributions?to=2021-03-21" data-url="/m607stars" data-from="2020-03-15 00:00:00 +0530" data-to="2021-03-21 23:59:59 +0530" data-org="" style="overflow-x:scroll; white-space: nowrap;">
+                            <svg width="828" height="128" class="js-calendar-graph-svg">
+                              <g transform="translate(10, 20)" data-hydro-click="{&quot;event_type&quot;:&quot;user_profile.click&quot;,&quot;payload&quot;:{&quot;profile_user_id&quot;:59757814,&quot;target&quot;:&quot;CONTRIBUTION_CALENDAR_SQUARE&quot;,&quot;user_id&quot;:59757814,&quot;originating_url&quot;:&quot;https://github.com/m607stars&quot;}}" data-hydro-click-hmac="2a0ac52f636c4238947456b12b21171a320fe0897c9b53510cd213a1dfe9322b">
+                                  <g transform="translate(0, 0)">
+                                      <rect width="11" height="11" x="16" y="0" class="ContributionCalendar-day" rx="1" ry="1" data-count="0" data-date="2020-03-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="16" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-28" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(16, 0)">
+                                      <rect width="11" height="11" x="15" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-03-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="15" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-04" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(32, 0)">
+                                      <rect width="11" height="11" x="14" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="14" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-11" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(48, 0)">
+                                      <rect width="11" height="11" x="13" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="13" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="13" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="13" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-04-15" data-level="1"></rect>
+                                      <rect width="11" height="11" x="13" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="13" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="13" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="9" data-date="2020-04-18" data-level="3"></rect>
+                                  </g>
+                                  <g transform="translate(64, 0)">
+                                      <rect width="11" height="11" x="12" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="12" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-04-20" data-level="1"></rect>
+                                      <rect width="11" height="11" x="12" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-04-21" data-level="1"></rect>
+                                      <rect width="11" height="11" x="12" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-04-22" data-level="1"></rect>
+                                      <rect width="11" height="11" x="12" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-04-23" data-level="1"></rect>
+                                      <rect width="11" height="11" x="12" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="12" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-25" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(80, 0)">
+                                      <rect width="11" height="11" x="11" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-04-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="11" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-05-02" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(96, 0)">
+                                      <rect width="11" height="11" x="10" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-05-03" data-level="2"></rect>
+                                      <rect width="11" height="11" x="10" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="10" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="5" data-date="2020-05-05" data-level="2"></rect>
+                                      <rect width="11" height="11" x="10" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="10" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="10" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="10" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-09" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(112, 0)">
+                                      <rect width="11" height="11" x="9" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="9" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="9" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="9" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="9" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="9" data-date="2020-05-14" data-level="3"></rect>
+                                      <rect width="11" height="11" x="9" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="9" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="5" data-date="2020-05-16" data-level="2"></rect>
+                                  </g>
+                                  <g transform="translate(128, 0)">
+                                      <rect width="11" height="11" x="8" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="8" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-23" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(144, 0)">
+                                      <rect width="11" height="11" x="7" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="7" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-05-30" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(160, 0)">
+                                      <rect width="11" height="11" x="6" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-05-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="6" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="6" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="6" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-06-03" data-level="1"></rect>
+                                      <rect width="11" height="11" x="6" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-06-04" data-level="1"></rect>
+                                      <rect width="11" height="11" x="6" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="6" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-06-06" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(176, 0)">
+                                      <rect width="11" height="11" x="5" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-06-07" data-level="1"></rect>
+                                      <rect width="11" height="11" x="5" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="5" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-06-09" data-level="1"></rect>
+                                      <rect width="11" height="11" x="5" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-06-10" data-level="1"></rect>
+                                      <rect width="11" height="11" x="5" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="5" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="5" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-13" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(192, 0)">
+                                      <rect width="11" height="11" x="4" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="4" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="4" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="4" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="4" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="4" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-06-19" data-level="1"></rect>
+                                      <rect width="11" height="11" x="4" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-20" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(208, 0)">
+                                      <rect width="11" height="11" x="3" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="3" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-27" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(224, 0)">
+                                      <rect width="11" height="11" x="2" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-06-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="2" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-04" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(240, 0)">
+                                      <rect width="11" height="11" x="1" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="1" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-11" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(256, 0)">
+                                      <rect width="11" height="11" x="0" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="0" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-18" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(272, 0)">
+                                      <rect width="11" height="11" x="-1" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-1" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-07-25" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(288, 0)">
+                                      <rect width="11" height="11" x="-2" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-2" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-07-27" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-2" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-2" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-2" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-2" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-07-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-2" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-01" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(304, 0)">
+                                      <rect width="11" height="11" x="-3" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-3" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-08-03" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-3" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-3" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-3" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-3" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-3" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-08" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(320, 0)">
+                                      <rect width="11" height="11" x="-4" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-4" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-15" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(336, 0)">
+                                      <rect width="11" height="11" x="-5" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-5" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-22" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(352, 0)">
+                                      <rect width="11" height="11" x="-6" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-6" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-08-24" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-6" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-6" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-6" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-08-27" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-6" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-08-28" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-6" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-29" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(368, 0)">
+                                      <rect width="11" height="11" x="-7" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-08-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-7" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-05" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(384, 0)">
+                                      <rect width="11" height="11" x="-8" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-8" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-12" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(400, 0)">
+                                      <rect width="11" height="11" x="-9" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-9" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-19" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(416, 0)">
+                                      <rect width="11" height="11" x="-10" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-10" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-09-26" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(432, 0)">
+                                      <rect width="11" height="11" x="-11" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-11" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="6" data-date="2020-09-28" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-11" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-11" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-09-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-11" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-10-01" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-11" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="10" data-date="2020-10-02" data-level="3"></rect>
+                                      <rect width="11" height="11" x="-11" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-03" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(448, 0)">
+                                      <rect width="11" height="11" x="-12" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-12" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-10" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(464, 0)">
+                                      <rect width="11" height="11" x="-13" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-13" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-17" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(480, 0)">
+                                      <rect width="11" height="11" x="-14" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-10-18" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-14" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-14" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-14" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-14" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-14" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-10-23" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-14" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-24" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(496, 0)">
+                                      <rect width="11" height="11" x="-15" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-15" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-10-31" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(512, 0)">
+                                      <rect width="11" height="11" x="-16" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-16" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-07" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(528, 0)">
+                                      <rect width="11" height="11" x="-17" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-17" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-17" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-11-10" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-17" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-11-11" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-17" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-17" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-17" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-14" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(544, 0)">
+                                      <rect width="11" height="11" x="-18" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-18" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-11-16" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-18" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-18" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-18" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-11-19" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-18" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-18" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-21" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(560, 0)">
+                                      <rect width="11" height="11" x="-19" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-19" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-19" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-19" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-19" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-19" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-11-27" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-19" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-28" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(576, 0)">
+                                      <rect width="11" height="11" x="-20" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-20" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-11-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-20" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-20" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-20" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-20" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-12-04" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-20" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-12-05" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(592, 0)">
+                                      <rect width="11" height="11" x="-21" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-21" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-21" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-21" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-21" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-21" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2020-12-11" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-21" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="11" data-date="2020-12-12" data-level="3"></rect>
+                                  </g>
+                                  <g transform="translate(608, 0)">
+                                      <rect width="11" height="11" x="-22" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-22" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2020-12-14" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-22" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-22" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-12-16" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-22" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-12-17" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-22" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2020-12-18" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-22" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-19" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(624, 0)">
+                                      <rect width="11" height="11" x="-23" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-23" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-23" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-23" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-23" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-23" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2020-12-24" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-23" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-23" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-26" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(640, 0)">
+                                      <rect width="11" height="11" x="-24" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-30" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2020-12-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-24" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-02" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(656, 0)">
+                                      <rect width="11" height="11" x="-25" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-04" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-06" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-25" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-09" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(672, 0)">
+                                      <rect width="11" height="11" x="-26" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-13" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-26" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-16" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(688, 0)">
+                                      <rect width="11" height="11" x="-27" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-20" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-27" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-23" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(704, 0)">
+                                      <rect width="11" height="11" x="-28" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-26" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-27" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-29" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-28" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-30" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(720, 0)">
+                                      <rect width="11" height="11" x="-29" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-01-31" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-29" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-01" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-29" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-29" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-29" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="15" data-date="2021-02-04" data-level="4"></rect>
+                                      <rect width="11" height="11" x="-29" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="7" data-date="2021-02-05" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-29" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-06" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(736, 0)">
+                                      <rect width="11" height="11" x="-30" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-07" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-30" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="6" data-date="2021-02-08" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-30" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-30" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-30" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2021-02-11" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-30" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="9" data-date="2021-02-12" data-level="3"></rect>
+                                      <rect width="11" height="11" x="-30" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-13" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(752, 0)">
+                                      <rect width="11" height="11" x="-31" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-31" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2021-02-15" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-31" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-31" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-31" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2021-02-18" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-31" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-31" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2021-02-20" data-level="1"></rect>
+                                  </g>
+                                  <g transform="translate(768, 0)">
+                                      <rect width="11" height="11" x="-32" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-21" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-32" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-22" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-32" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="1" data-date="2021-02-23" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-32" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-24" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-32" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-25" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-32" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="4" data-date="2021-02-26" data-level="2"></rect>
+                                      <rect width="11" height="11" x="-32" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="9" data-date="2021-02-27" data-level="3"></rect>
+                                  </g>
+                                  <g transform="translate(784, 0)">
+                                      <rect width="11" height="11" x="-33" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-02-28" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-33" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="3" data-date="2021-03-01" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-33" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-02" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-33" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-03" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-33" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2021-03-04" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-33" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-05" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-33" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-06" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(800, 0)">
+                                      <rect width="11" height="11" x="-34" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="2" data-date="2021-03-07" data-level="1"></rect>
+                                      <rect width="11" height="11" x="-34" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-08" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-34" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-09" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-34" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-10" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-34" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-11" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-34" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-12" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-34" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-13" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(816, 0)">
+                                      <rect width="11" height="11" x="-35" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-14" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="15" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-15" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="30" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-16" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="45" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-17" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="60" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-18" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="75" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-19" data-level="0"></rect>
+                                      <rect width="11" height="11" x="-35" y="90" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-20" data-level="0"></rect>
+                                  </g>
+                                  <g transform="translate(832, 0)">
+                                      <rect width="11" height="11" x="-36" y="0" class="ContributionCalendar-day" rx="2" ry="2" data-count="0" data-date="2021-03-21" data-level="0"></rect>
+                                  </g>
+                                    <text x="16" y="-8" class="ContributionCalendar-label">Mar</text>
+                                    <text x="46" y="-8" class="ContributionCalendar-label">Apr</text>
+                                    <text x="106" y="-8" class="ContributionCalendar-label">May</text>
+                                    <text x="181" y="-8" class="ContributionCalendar-label">Jun</text>
+                                    <text x="241" y="-8" class="ContributionCalendar-label">Jul</text>
+                                    <text x="301" y="-8" class="ContributionCalendar-label">Aug</text>
+                                    <text x="376" y="-8" class="ContributionCalendar-label">Sep</text>
+                                    <text x="436" y="-8" class="ContributionCalendar-label">Oct</text>
+                                    <text x="496" y="-8" class="ContributionCalendar-label">Nov</text>
+                                    <text x="571" y="-8" class="ContributionCalendar-label">Dec</text>
+                                    <text x="631" y="-8" class="ContributionCalendar-label">Jan</text>
+                                    <text x="706" y="-8" class="ContributionCalendar-label">Feb</text>
+                                    <text x="766" y="-8" class="ContributionCalendar-label">Mar</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="8" style="display: none;">Sun</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="25" style="display: none;">Mon</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="32" style="display: none;">Tue</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="56" style="display: none;">Wed</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="57" style="display: none;">Thu</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="85" style="display: none;">Fri</text>
+                                    <text text-anchor="start" class="ContributionCalendar-label" dx="-10" dy="81" style="display: none;">Sat</text>
+                                </g>
+                            </svg>
+                            
+                            <div class="width-full f6 px-0 px-md-5 py-1">
+                                <div class="float-left">
+                                </div>
+                                <div class="float-right color-text-secondary" title="A summary of pull requests, issues opened, and commits to the default and gh-pages branches.">
+                                        Less
+                                          <svg width="10" height="10" class="d-inline-block">
+                                            <rect width="10" height="10" class="ContributionCalendar-day" rx="2" ry="2" data-level="0"></rect>
+                                          </svg>
+                                          <svg width="10" height="10" class="d-inline-block">
+                                            <rect width="10" height="10" class="ContributionCalendar-day" rx="2" ry="2" data-level="1"></rect>
+                                          </svg>
+                                          <svg width="10" height="10" class="d-inline-block">
+                                            <rect width="10" height="10" class="ContributionCalendar-day" rx="2" ry="2" data-level="2"></rect>
+                                          </svg>
+                                          <svg width="10" height="10" class="d-inline-block">
+                                            <rect width="10" height="10" class="ContributionCalendar-day" rx="2" ry="2" data-level="3"></rect>
+                                          </svg>
+                                          <svg width="10" height="10" class="d-inline-block">
+                                            <rect width="10" height="10" class="ContributionCalendar-day" rx="2" ry="2" data-level="4"></rect>
+                                          </svg>
+                                        More
+                                </div>
+                            </div>
+                        </div> -->
+                    <!-- </div> -->
+                        <!-- <br> -->
+
+                        <div class="row mx-3" style="max-height: 250px; overflow-y: scroll; overflow-x: hidden;">
+                            <!-- <div class="col-sm-5"> -->
+                                <div class="my-1">
+                                    <table class="table" style="table-layout: fixed;">
+                                        <tbody>
+                                            {% for blog in published_blogs reversed %}
+                                                <tr class="no-border">
+                                                    <!-- <th scope="row"></th> -->
+                                                    <td style="width: 75%;">
+                                                        <svg x=30 y=20 xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                                        <path d="M13.498.795l.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                                                        </svg>
+                                                        <a style="font-size: 1.1rem; text-decoration: none; color: #01BACF;" href="{% url 'blog-single' blog.slug %}">{{blog.title}}</a>
+                                                    </td>
+                                                    <td style="width: 25%;">{{blog.updated_at|date:'jS M, Y'}}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            {% for assignment in contributed_assignments reversed %}
+                                                <tr class="no-border">
+                                                    <!-- <th scope="row"></th> -->
+                                                    <td style="width: 75%;">
+                                                        <svg x=30 y=25 xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                                                            <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                                                        </svg>
+                                                        <a style="font-size: 1.1rem; text-decoration: none; color: #01BACF;" href="{% url 'assignment-detail' assignment.slug %}">{{assignment.parent_assignment.title}}</a>
+                                                    </td>
+                                                    <td style="width: 25%;">{{assignment.date_added|date:'jS M, Y'}}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    
+                                    <!-- {% for assignment in contributed_assignments|slice:":5" %}
+                                        <p>
+                                            <svg x=30 y=25 xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                                <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                                                <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                                            </svg>
+                                            <a style="text-decoration: none;" href="{% url 'assignment-detail' assignment.slug %}">{{assignment.parent_assignment.title}}</a>
+                                        </p>
+                                    {% endfor %} -->
+                                </div>
+                            <!-- </div> -->
+                        </div>
+                        <br>
+                </div>
+
+
+                <br><br>
+
+
+                <div class="card">
+                    <h5 class="card-title m-3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-list-task" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z"/>
+                        <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z"/>
+                        <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z"/>
+                      </svg> Statistics</h5>
+                    <div class="m-3">
+                        <table class="table">
+                            <tbody>
+                              <tr class="no-border">
+                                <th scope="row"></th>
+                                <td>Assignments accepted </td>
+                                <td>{{contributed_assignments|length}}</td>
+                              </tr>
+                              <tr class="no-border">
+                                <th scope="row"></th>
+                                <td>Assignments points </td>
+                                <td>{{rewards.assignment_points}}</td>
+                              </tr>
+                              <tr class="no-border">
+                                <th scope="row"></th>
+                                <td>Blogs published</td>
+                                <td> {{published_blogs|length}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row"></th>
+                                <td>Blogs points</td>
+                                <td>{{rewards.blog_points}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row"></th>
+                                <td>Total</td>
+                                <td> {{rewards.points}} </td>
+                              </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-center"><a href="{% url 'user-leaderboard' request.user.slug %}?page=1&tab=overall" style="text-decoration: none; color: #01BACF;">View Leaderboard</a></p>
+                    </div>
+                </div>
+                
+                <br>
+                <br>
+
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $("#follow_unfollow_form").on('submit',function (event) {
+        console.log("Inside script")
+        event.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            type : "POST",
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                if (data) {
+                    if(data['action'] === 'follow'){
+                        document.getElementById("follow-unfollow-btn").innerHTML = "Unfollow"
+                    }
+                    else{
+                        document.getElementById("follow-unfollow-btn").innerHTML = "Follow"
+                    }
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                $('body').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>");
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+
+<style>
+</style>

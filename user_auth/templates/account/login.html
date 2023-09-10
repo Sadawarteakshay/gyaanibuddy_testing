@@ -1,0 +1,67 @@
+{% extends 'main/gb_base.html' %}
+{% load static %}
+{% load socialaccount %}
+{% block extraHead %}
+<style>
+    .form-mw {
+        max-width: 400px;
+    }
+
+    .fb {
+        background-color: #3B5998;
+        color: white;
+    }
+
+    .google {
+        background-color: #dd4b39;
+        color: white;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <img class="mb-4" src="https://www.gyaanibuddy.com/static/images/gb-logo.png" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
+    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="form-mw mx-auto w-100">
+            {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                {{form.errors}}
+            </div>
+            {% endif %}
+            <div class="form-group my-3">
+                <input type="text" id="inputEmail" class="form-control" placeholder="Username or Email" required
+                    autofocus name="login">
+            </div>
+            <div class="form-group my-3">
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required autofocus
+                    name="password">
+            </div>
+            <div class="form-group my-3 d-flex justify-content-center">
+                <label>
+                    <input type="checkbox" value="remember-me" name="remember"> Remember me
+                </label>
+            </div>
+            <button type="submit" class="btn btn-secondary w-100 p-2">Sign In</button>
+            <p class="text-center my-2">Or Login With</p>
+            <a href="{% provider_login_url 'facebook' %}" class="btn w-100 fb my-2 p-2">Login with Facebook</a>
+            <a href="{% provider_login_url 'google' %}" class="btn w-100 google my-2 p-2">Login with Google</a>
+            <p class="text-center my-2">Forgot your password?</p>
+            <a href="{% url 'account_reset_password' %}" class="text-center">
+                <p>Reset Password</p>
+            </a>
+            <p class="text-center my-2">Don't have an account?</p>
+            <a href="{% url 'account_signup' %}" class="text-center">
+                <p>Sign Up</p>
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

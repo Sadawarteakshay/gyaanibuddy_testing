@@ -1,0 +1,159 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+.opacity-1 {
+    opacity: 1 !important;
+}
+
+h6.brief {
+    padding: 5px 5px 5px 10px;
+    ;
+}
+
+nav,
+footer {
+    background-color: #1D2023 !important;
+}
+
+header img {
+    border-radius: 9px;
+}
+
+div.start-image {
+    background-image: url('../images/user-home-page/knowledge.jpg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    height: 100%;
+    padding: 40vh 5vw;
+    color: black;
+}
+
+.start-image {
+    text-align: center;
+}
+
+.start-image h2 {
+    background-color: white;
+    padding: 20px;
+    opacity: 0.8;
+    color: black;
+    border-radius: 8px;
+    /*margin: ; */
+}
+
+.card-content {
+    margin: auto auto;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    text-align: center;
+}
+
+.card-content h6 {
+    font-size: 20px;
+}
+
+.info-card img {
+    padding: 5px;
+}
+
+
+/* Make the image fully responsive */
+
+.carousel-inner img {
+    height: 100vh;
+    object-fit: cover;
+    width: 100%;
+}
+
+
+/********** Medium devices only **********/
+
+@media (max-width: 992px) and (min-width: 769px) {
+    .card-content h6 {
+        font-size: 15px;
+    }
+    .card-content h2 {
+        font-size: 20px;
+    }
+    .start-image h2 {
+        font-size: 30px;
+    }
+    div.start-image {
+        padding: 30vw 5vw;
+    }
+    .card-content button {
+        /*background-color: */
+        font-size: 15px;
+    }
+}
+
+
+/********* Small devices only *********/
+
+@media (max-width: 768px) and (min-width: 577px) {
+    .card-content h6 {
+        font-size: 13px;
+    }
+    .card-content h2 {
+        font-size: 18px;
+    }
+    .info-card {
+        padding: 0px 18px;
+    }
+    div.start-image {
+        padding: 27vw 5vw;
+    }
+    .start-image h2 {
+        font-size: 25px;
+    }
+    .card-content button {
+        /*background-color: */
+        font-size: 12px;
+    }
+}
+
+
+/********** Extra small devices only *********/
+
+@media (max-width: 576px) {
+    .card-content h6 {
+        font-size: 16px;
+    }
+    .card-content {
+        padding-bottom: 20px;
+    }
+    h6.brief {
+        padding: 4px;
+    }
+    .card-content h2 {
+        font-size: 19px;
+    }
+    .info-card {
+        text-align: center;
+    }
+    div.start-image {
+        padding: 27vw 5vw;
+    }
+    .start-image h2 {
+        font-size: 20px;
+    }
+    .info-card img {
+        padding: 0px;
+        width: 75%;
+    }
+    .card-content button {
+        /*background-color: */
+        font-size: 15px;
+        padding: 10px;
+    }
+    .hidden-xs {
+        display: none !important; 
+    }
+}

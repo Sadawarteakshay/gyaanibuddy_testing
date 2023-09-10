@@ -1,0 +1,35 @@
+{% extends 'main/gb_base.html' %}
+{% load static %}
+{% load socialaccount %}
+{% block extraHead %}
+<style>
+    .form-mw {
+        max-width: 400px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+<title>Sign Out</title>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <img class="mb-4" src="{% static 'images/gb-logo.png' %}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Sign Out</h1>
+    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="form-mw mx-auto w-100">
+            {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                {{form.errors}}
+            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-secondary w-100 p-2">Sign Out</button>
+        </div>
+    </form>
+</div>
+<br>
+{% endblock %}

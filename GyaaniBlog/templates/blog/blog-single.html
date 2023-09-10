@@ -1,0 +1,462 @@
+{% extends 'main/gb_base.html' %}
+{% load disqus_tags %}
+{% disqus_dev %}
+{% set_disqus_url blog_data.get_absolute_url %}
+{% load static %}
+
+{% block extraHead %}
+<title>
+    {{blog_data.title}}
+</title>
+<meta name="description" content="{{blog_data.title}}">
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <!-- highlight.js-->
+    <link rel="stylesheet" 
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <!-- highlight.js -->
+{% endblock %}
+
+
+{% block extraCss %}
+<style>    
+    .category {
+        color: #24bacf;
+    }
+    
+    .title{
+        font-weight: bolder;
+    }
+    
+    .blog-image{
+        height: auto;
+        max-width: 100%;
+    }
+    
+    .tag-box{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .tag{
+        background-color: #24bacf;
+        color: white;
+        margin: 4px 4px;
+        padding: 4px 4px;
+        border: none;
+        font-size: small;
+        font-weight: 500;
+        border-radius: 3px;
+    }
+    
+    .author-card{
+        margin-top: 70px;
+        padding: 10px 20px;
+    }
+    
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+    img{
+        max-width: 100%;
+    }
+    .likeLeft{
+        margin-top:50px;
+        position:fixed;
+        display:none;
+    }
+    @media screen and (min-width: 480px) {
+        .likeLeft{
+            display: block;
+        }
+    }
+    .likeBottom{
+        display:block;
+    }
+    @media screen and (min-width: 480px) {
+        .likeBottom{
+            display: none;
+        }
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+    
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-md-1">
+                <div class="likeLeft">
+                    {% if user.is_authenticated %}
+                        <form id="like-dislike-form" action="{% url 'blog_like' blog_data.slug %}" method="POST">
+                            {% csrf_token %}
+                            {% if liked %}
+                                <!-- <button type="submit" name="blogpost_slug" value="{{blog_data.slug}}" class="btn btn-info">Unlike</button> -->
+                                <small>
+                                    <button id="like-dislike-button-box"  type="submit" name="blogpost_slug" class="btn btn-danger" value="{{blog_data.slug}}">
+                                        <i id="like-dislike-button" class="fa fa-thumbs-down" aria-hidden="true">Dislike</i>
+                                    </button>
+                                </small>
+                            {% else %}
+                                <small>
+                                    <button id="like-dislike-button-box" type="submit" name="blogpost_slug" class="btn btn-primary" value="{{blog_data.slug}}">
+                                        <i id="like-dislike-button" class="fa fa-thumbs-up" aria-hidden="true">Like</i>
+                                    </button>
+                                </small>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        <a class="btn btn-outline-info" href="{% url 'account_login' %}?next={{request.path}}">Like</a><br>
+                    {% endif %}
+                    <strong id="like-count" class="text-secondary">{{ number_of_likes }} Like{{ number_of_likes|pluralize }}</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-7">
+                
+                <!-- Edit Button -->
+                {% if user.is_authenticated %}
+                <p class="d-flex justify-content-start justify-content-md-end">
+                    
+                    {% if user == blog_data.writer %}
+                        <small>
+                            <a href="{% url 'blog-edit' blog_data.slug %}">
+                                <i class="fa fa-edit">
+                                    Edit
+                                </i>
+                            </a>
+                        </small>
+                    {% endif %}
+                    
+
+                </p>
+                {% endif %}
+                
+                <!-- Category -->
+                <p class="category">
+                    <!-- INTERNSHIP-EXPERIENCE -->
+                </p>
+                
+                <!-- Title -->
+                <h4 class="title">
+                    {{ blog_data.title }}
+                </h4>
+                
+
+                <!-- About writer and blog -->
+                <p>
+                    <small style="color: gray;">Last updated on {{ blog_data.updated_at }}</small>
+                    <a 
+                        style="text-decoration: none;" 
+                        {% if blog_data.writer %}
+                            href="{% url 'user-profile' blog_data.writer.slug %}"
+                        {% else %}
+                            href=""
+                        {% endif %}
+                    >
+                        <small style="color: #6ad3e3;">by {{ blog_data.writer }}</small>
+                    </a>
+                </p>
+
+                <!-- Video -->
+                {% if blog_data.video %}
+                    <iframe 
+                        style="width:100%;min-height:300px"
+                        src="{{blog_data.video}}">
+                    </iframe>
+                {% else %}
+                    {% if blog_data.image %}
+                        <div style="width: 100%;" class="text-center">
+                            <img
+                            id="main-img" 
+                            src="{{blog_data.image.url}}" 
+                            class="blog-image rounded img-fluid" 
+                            alt="Image desc"
+                            style="resize: both;overflow: auto;"
+                            >
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <!-- Image -->
+                
+                <!-- Content -->
+                <div >
+                    <!-- Start blog -->
+                    <div class="py-1" style="max-width: 100%;overflow: auto;">
+                        <div class="p-2 my-2" style="background-color: lightgray;max-width: 100%;">
+                            {{ blog_data.short_description|safe }}
+                        </div>
+                        <div class="py-2">
+                            {{ blog_data.content|safe }}
+                        </div>
+                    </div>
+                    
+                    <!-- End blog -->
+
+                    <!-- Tags -->
+                    <div class="tag-box">
+                        {% for t in tag_list %}
+                        <a href="{% url 'name_blog' %}?q={{t}}">
+                            <button class="tag">{{t}}</button>
+                        </a>
+                        {% endfor %}
+                    </div>
+
+
+                    <!-- LIKE -->
+                    <div class="likeBottom">
+                        {% if user.is_authenticated %}
+                            <form id="like-dislike-form-bottom" action="{% url 'blog_like' blog_data.slug %}" method="POST">
+                                {% csrf_token %}
+                                {% if liked %}
+                                    <!-- <button type="submit" name="blogpost_slug" value="{{blog_data.slug}}" class="btn btn-info">Unlike</button> -->
+                                    <small>
+                                        <button id="like-dislike-button-box-bottom"  type="submit" name="blogpost_slug" class="btn btn-danger" value="{{blog_data.slug}}">
+                                            <i id="like-dislike-button-bottom" class="fa fa-thumbs-down" aria-hidden="true">Dislike</i>
+                                        </button>
+                                    </small>
+                                {% else %}
+                                    <small>
+                                        <button id="like-dislike-button-box-bottom" type="submit" name="blogpost_slug" class="btn btn-primary" value="{{blog_data.slug}}">
+                                            <i id="like-dislike-button-bottom" class="fa fa-thumbs-up" aria-hidden="true">Like</i>
+                                        </button>
+                                    </small>
+                                {% endif %}
+                            </form>
+                        {% else %}
+                            <a class="btn btn-outline-info" href="{% url 'account_login' %}?next={{request.path}}">Log in to like this blog!</a><br>
+                        {% endif %}
+                        <strong id="like-count-bottom" class="text-secondary">{{ number_of_likes }} Like{{ number_of_likes|pluralize }}</strong>
+                    </div>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete Blog</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <p>Are You sure you want to delete blog - {{blog_data.title}}. It cannot be recovered later.</p>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a type="button" href="{% url 'blog-delete' blog_data.slug %}" class="btn btn-danger">Delete Blog</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Share -->
+                    {% include 'includes/share.html' %}
+
+                    <!-- About author -->
+                    <div class="card author-card shadow-lg p-3 mb-5 bg-white rounded" style="display: flex;flex-direction: row;">
+                        <!-- <div class="row"> -->
+                            <!-- <div class="card" style="width: 100%;"> -->
+                                <div>
+                                    <!-- class="col-12 col-md-4 text-center" -->
+                                    <img 
+                                        style="width: 120px;height: 120px;border-radius: 50%;" 
+                                        {% if blog_data.writer.profile_image %}
+                                             src={{blog_data.writer.profile_image.url}}
+                                        {% else %}
+                                            src="https://images.unsplash.com/photo-1565728744382-61accd4aa148?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=752&q=80"
+                                        {% endif %}
+                                        
+                                        class="card-img-top" 
+                                        alt="..."
+                                    >
+                                </div>
+                                <div class="p-2">
+                                    <!-- class="col-12 col-md-8" -->
+                                    <p style="font-weight: bold;">
+                                        <a 
+                                            style="text-decoration: none;" 
+                                            {% if blog_data.writer %}
+                                                href="{% url 'user-profile' blog_data.writer.slug %}"
+                                            {% else %}
+                                                href=""
+                                            {% endif %}
+                                        >
+                                            <small style="color: #6ad3e3;">by {{ blog_data.writer }}</small>
+                                        </a>
+                                        <br>
+                                        <small style="font-style: italic;">
+                                            {% if blog_data.writer.institute %}
+                                                {{ blog_data.writer.institute }}
+                                            {% endif %}
+                                        </small>
+                                    </p>
+                                    <small style="font-style: italic;font-weight:bold;">
+                                        {% if blog_data.writer.about_me %}
+                                            {{ blog_data.writer.about_me }}
+                                        {% else %}
+                                            Gyaanibuddy
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
+                    </div>
+
+                    {% if request.user.is_authenticated and request.user == blog_data.writer %}
+                    <div class="my-3">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Delete Blog
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+
+                <!-- Some image -->
+                <img src="{% static 'upload/gyaaniblog.jpeg' %}" class="rounded img-fluid" alt="Image desc">
+                <hr/>
+
+                <!-- Suggested Posts -->
+                <div>
+                    <h4>Suggested Posts</h4>
+                    
+                        {% for sb in controlled_blogs.suggested_blogs.all %}
+                            <div class="p-2" style="display: flex;flex-direction: row;">
+                                <div style="flex: 1;">
+                                    <img 
+                                    alt=""
+                                    style="border-radius: 10px;height: 100px;width: 100px;background-color: #6ad3e3;" 
+                                    {% if sb.image %} 
+                                    src="{{sb.image.url}}" 
+                                    {% else %} 
+                                    src="https://images.unsplash.com/photo-1565728744382-61accd4aa148?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=752&q=80"
+                                    {% endif %} 
+                                    />
+                                </div>
+                                <div style="padding-left: 10px;flex: 3;">
+                                    <p><a style="text-decoration: none;color: black;" href="{% url 'blog-single' sb.slug %}">{{ sb.title }}</a></p>
+                                    <p><small style="color: gray;">{{sb.created_at}}</small></p>
+                                    <p>
+                                        <a 
+                                            style="text-decoration: none;" 
+                                            {% if sb.writer %}
+                                                href="{% url 'user-profile' sb.writer.slug %}"
+                                            {% else %}
+                                                href=""
+                                            {% endif %}
+                                        >
+                                            <small style="color: #6ad3e3;">by {{ sb.writer }}</small>
+                                        </a>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    
+                    <div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <!-- Suggested Tags -->
+                <div>
+                    <h4>Suggested Tags</h4>
+                    <div class="tag-box">
+                        {% for tag in controlled_blogs.suggested_tags.all %}
+                            
+                            <a href="{% url 'name_blog' %}?q={{tag.name}}">
+                                <button class="tag">{{tag.name}}</button>
+                            </a>
+                            
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div style="background-color: white;">
+                {% disqus_show_comments %}
+            </div>
+            <div style="margin-bottom: 200px;"></div>
+        </div>
+        
+        
+    </div>
+    <script>
+        $("#like-dislike-form").on('submit',function (event) {
+            console.log("bam")
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type : "POST",
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        $("#like-count").text(data['number_of_likes'] + " Likes");
+                        if(data['action'] === 'Like'){
+                            document.getElementById("like-dislike-button").className = "fa fa-thumbs-down";
+                            document.getElementById("like-dislike-button").innerHTML = "Dislike"
+                            document.getElementById("like-dislike-button-box").className = "btn btn-danger"
+                        }
+                        else{
+                            document.getElementById("like-dislike-button").className = "fa fa-thumbs-up";
+                            document.getElementById("like-dislike-button").innerHTML = "Like"
+                            document.getElementById("like-dislike-button-box").className = "btn btn-primary"
+                        }
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    $('body').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>");
+                }
+            });
+        });
+      </script>
+
+
+      <script>
+        $("#like-dislike-form-bottom").on('submit',function (event) {
+            console.log("bam")
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type : "POST",
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        $("#like-count-bottom").text(data['number_of_likes'] + " Likes");
+                        if(data['action'] === 'Like'){
+                            document.getElementById("like-dislike-button-bottom").className = "fa fa-thumbs-down";
+                            document.getElementById("like-dislike-button-bottom").innerHTML = "Dislike"
+                            document.getElementById("like-dislike-button-box-bottom").className = "btn btn-danger"
+                        }
+                        else{
+                            document.getElementById("like-dislike-button-bottom").className = "fa fa-thumbs-up";
+                            document.getElementById("like-dislike-button-bottom").innerHTML = "Like"
+                            document.getElementById("like-dislike-button-box-bottom").className = "btn btn-primary"
+                        }
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    $('body').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>");
+                }
+            });
+        });
+      </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

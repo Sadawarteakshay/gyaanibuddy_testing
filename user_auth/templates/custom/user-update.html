@@ -1,0 +1,123 @@
+{% extends 'custom/dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>GB Additional Details</title>
+    {% include 'account/cssBase.html' %}
+</head>
+
+    <!------------------------------------Main Body-------------------------------------->
+    {% block start %}
+    <div class="container">
+        <form class="form-signup " method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="text-center mb-4">
+                {% if user.profile_image %}
+                <img src="{{user.profile_image.url}}" alt="Admin" width="150" height="150px" class="rounded-circle">
+                {% else %}
+                <img src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="Admin"
+                    class="rounded-circle" width="150">
+                {% endif %}
+                <br>
+                {{form.profile_image}}
+                <br>
+                <h2 class="h3 mb-3 font-weight-normal">Update your details here, <strong>{{user.username}}</strong></h2>
+            
+            </div>
+
+            
+            <hr>
+
+            {% if messages %}
+            <div class="alert alert-success text-center">
+                {% for message in messages %}
+                {% ifequal message.tags "account_updated success" %}
+                <h4>{{ message }}</h4>
+                {% endifequal %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                {{form.errors}}
+            </div>
+            {% endif %}
+            <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">First Name</span>
+                </div>
+                {{form.first_name|add_class:"form-control"}}
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Last Name</span>
+                </div>
+                {{form.last_name|add_class:"form-control"}}
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">About Me</span>
+                </div>
+                {{form.about_me|add_class:"form-control"}}
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Mobile Number</span>
+                </div>
+                {{form.phone_number|add_class:"form-control"}}
+            </div>
+            <h6 style="text-align: left;"  >The current institute is {{current_institute}}</h6>
+            <div class="input-group" id="studyplace">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">* Institute</span>
+                </div>
+                {{form.institute|add_class:"form-control"}}
+            </div>
+            <p style="text-align: left; color: red;"> Please make sure you have updated your institute!</p>
+            <!-- <div class="custom-file mb-3">
+                <label class="custom-file-label" for="customFile">Profile Image</label>
+                <input type="file" class="custom-file-input" id="customFile" name='profile_image'>
+            </div> -->
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Facebook</span>
+                </div>
+                {{form.facebook_link|add_class:"form-control"}}
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Instagram</span>
+                </div>
+                {{form.instagram_link|add_class:"form-control"}}
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Linkedin</span>
+                </div>
+                {{form.linkedin_link|add_class:"form-control"}}
+            </div>
+
+            <!-- <div class="custom-file input-group mb-3">
+                <label class="custom-file-label" for="customFile">Choose Image</label>
+                {{form.profile_image|add_class:"custom-file-input"}}
+            </div> -->
+            <div class="container text-center" >
+                <button class="btn btn-lg btn-secondary btn-block my-3" type="submit">Update Details</button>
+            </div>
+            </div>
+            <div class="col-2"></div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

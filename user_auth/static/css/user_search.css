@@ -1,0 +1,26 @@
+.search-form{
+    width:100%;
+    display: flex;
+    justify-content: center;
+}
+
+.results-div{
+    width: 80%;
+    margin: auto;
+}
+
+.pagination-div{
+    width: 80%;
+    margin: auto;
+}
+
+.card-venue{
+    display: flex;
+    justify-content: space-between;
+}
+
+@media (max-width:700px){
+    .card-venue{
+        display: initial;
+    }
+}

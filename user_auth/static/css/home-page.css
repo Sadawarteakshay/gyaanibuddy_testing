@@ -1,0 +1,340 @@
+*{
+	box-sizing: border-box;
+}
+
+html, body {
+	overflow-x: hidden;
+}
+
+/*********************** HEADER *******************/
+
+nav, footer {
+	background-color: black;
+}
+
+header img {
+	border-radius: 9px;
+}
+
+.color1, .color2, .color3 {
+	height: 10px;
+}
+
+.color1 {
+	background-color: #d9a38e;
+}
+
+.color2 {
+	background-color: #75483b;
+}
+
+.color3 {
+	background-color: #4a221a;
+}
+
+.card-content {
+	margin: auto auto;
+	padding-left: 5vw;
+	padding-right: 5vw;
+}
+/*********************** HEADER END *******************/
+
+
+
+
+/************************ MAIN BODY ***********************/
+.top-card {
+	background-image: url('../img/top-card.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 100%;
+	padding: 300px 100px 300px 100px;
+	color: black;
+}
+.top-card h1 {
+	font-weight: bold;
+}
+.top-card h2 {
+	font-weight: bold;
+}
+
+.brief {
+	color: #1f1d1e;
+	
+}
+
+
+
+#flashcards {
+	padding-bottom: 100px;
+	background-image: url(../img/flash-bg.jpg);
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#flashcards button {
+	padding: 3vw 6vw;
+	background-image: url(../img/rocket.jpg) ;
+	background-size: contain;
+	background-color: white;
+	background-repeat: no-repeat;
+	margin: 1vw;
+	width: 100%;
+	font-size: 20px;
+	text-align: right;
+	border-width: 2px;
+	font-weight: bold;
+}
+
+#flashcards button:hover {
+	background-color: #dc3545;
+}
+
+.card-name {
+	box-shadow: 5px 10px 8px 10px #888888;
+	background-image: url('../img/flashcard.jpg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+
+
+#comment-img {
+	background-image: url('../img/comment.jpg');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+	width: 100%;
+	height: 500px;
+	color: black;
+}
+
+.user-comment {
+	background-color: white;
+	opacity: 0.7;
+	border-radius: 10px;
+	margin:  0 90px;
+}
+
+
+#comment-img h4 {
+	padding-right: 5%;
+	padding-left: 5%;
+}
+
+#feedback {
+	background-color: #ffdcd6;
+}
+
+#feedback h5 {
+	text-align: center;
+	padding: 50px;
+	margin-bottom: 0;
+}
+
+#end-page {
+	background-image: url('../img/puzzle.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	width: 100%;
+	height: 800px;
+}
+#end-page h5 {
+	padding-top: 350px;
+	font-size: 45px;
+}
+#end-page button {
+	background-color: #2a2a68;
+	border-color: #2a2a68;
+	align-items: center;
+}
+#end-page a, 
+#end-page a:hover, 
+#end-page a:focus{
+	text-decoration: none;
+	color: white;
+}
+
+/************************ BODY END ***********************/
+
+
+
+
+/********** Medium devices only **********/
+@media (max-width: 992px) and (min-width: 769px) {
+	.card-content h6{
+		font-size: 15px;
+	}
+	.card-content h2{
+		font-size: 20px;
+	}
+	#flashcards button {
+		padding: 2vw 3vw;
+	}
+	#end-page h5 {
+		padding-top: 150px;
+		font-size: 40px;
+	}
+	#end-page {
+		height: 500px;
+	}
+	#comment-img {
+		height: 250px;
+	}
+	#feedback h5, #comment-img h6 {
+		font-size: 15px;
+	}
+	#comment-img h4 {
+		font-size: 17px;
+	}
+	#end-page h5 {
+		font-size: 25px;
+	}
+
+}
+
+/********* Small devices only *********/
+@media (max-width: 768px) and (min-width: 577px) {
+	#end-page h5 {
+		padding-top: 150px;
+		font-size: 35px;
+	}
+	#end-page {
+		height: 500px;
+	}
+	.card-content h6{
+		font-size: 13px;
+	}
+	.card-content h2{
+		font-size: 18px;
+	}
+	#flashcards button {
+		padding: 2vw 3vw;
+		text-align: center;
+	}
+	#flashcards .h3 {
+		font-size: 20px;
+	}
+	#feedback h5, #comment-img h6 {
+		font-size: 13px;
+	}
+	#feedback h5 {
+		padding: 30px;
+	}
+	#comment-img h4 {
+		font-size: 14px;
+	}
+	#comment-img {
+		height: 200px;
+	}
+	#end-page h5 {
+		font-size: 20px;
+		padding-top: 90px;
+	}
+	#end-page {
+		height: 300px;
+	}
+	#flashcards button {
+		background-image: none;
+	}
+	#end-page button {
+		font-size: 14px;
+	}
+	.info-card {
+		padding: 20px 18px;
+	}
+
+}
+
+
+/********** Extra small devices only *********/
+@media (max-width: 576px) {
+	#flashcards .h3 {
+		font-size: 15px;
+	}
+	#flashcards button {
+		background-image: none;
+		text-align: center;
+		font-size: 13px;
+		padding: 10px;
+		margin: 6px;
+	}
+	.card-content h6{
+		font-size: 10px;
+	}
+	.card-content h2 {
+		font-size: 15px;
+	}
+	.card-content h5 {
+		font-size: 13px;
+	}
+	.info-card {
+		padding: 40px 5px;
+	}
+	#flashcards {
+		height: 350px;
+	}
+	#feedback h5, #comment-img h6 {
+		font-size: 12px;
+	}
+	#feedback h5 {
+		margin-top: 10px;
+		padding: 30px 10px 20px 10px;
+		font-weight: normal;
+	}
+	#comment-img h4 {
+		font-size: 13px;
+	}
+	#comment-img {
+		height: 200px;
+	}
+	.user-comment{
+		margin: 0 11px;
+	}
+	#end-page h5 {
+		font-size: 20px;
+		padding-top: 90px;
+	}
+	#end-page {
+		height: 300px;
+	}
+	#end-page button {
+		font-size: 10px;
+	}
+	.top-card {
+		padding: 200px 100px 200px 100px;
+	}
+}
+
+/*****************************Comment Slider************************************************/
+.owl-prev {
+            left: 10px;
+        }
+
+.owl-next {
+            right: 10px;
+        }
+
+.owl-prev,.owl-next {
+            position: absolute;
+            top: 10%;
+        }
+
+.owl-prev span,.owl-next span {
+            font-size: 60px;
+            color: #777777;
+
+        }
+.owl-prev span:hover{
+	background-color:pink ;
+}
+.owl-next span:hover{
+	background-color:pink ;
+}
+
+.owl-theme .owl-nav [class*="owl-"]:hover {
+            background-color:transparent;
+        }

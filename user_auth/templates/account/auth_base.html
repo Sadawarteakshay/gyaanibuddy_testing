@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+
+    <!-- fontawsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous" />
+    {% block assignment_head %}
+    {% endblock %}
+
+    <style>
+        .submit-buttons {
+            border-radius: 0;
+            font-size: 14px;
+            border: 1px solid #fff;
+            font-weight: bold;
+            color: #ffffff !important;
+            padding: 13px 40px;
+            text-transform: capitalize;
+            background-color: #01bacf;
+            margin: 0 5px;
+            transition: all ease 0.5s;
+        }
+
+        .submit-buttons:hover {
+            background-color: #04adbf;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light py-3" style="color:darkgray;background-color: white;">
+        <div class="container-fluid">
+            <nav class="navbar navbar-light">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'name_index' %}">
+                        <img src="https://www.gyaanibuddy.com/static/images/final_logo.webp" alt="" width="150"
+                            height="24" style="height: 5vh;">
+                    </a>
+                </div>
+            </nav>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="w-100 navbar-nav   d-flex justify-content-start">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'name_index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'name_blog' %}">GyaaniBlogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'name_technews' %}">Technews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'name_index' %}">ContactUs</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Assignments & Papers
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'assignment-list' %}">Assignments</a></li>
+                            <li><a class="dropdown-item" href="{% url 'name_PaperForm' %}">Papers</a></li>
+                            {% if request.user.is_gyaanibuddy_admin %}
+                            <li><a class="dropdown-item" href="{% url 'combined-submissions' %}">Submissions</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="w-100 navbar-nav   d-flex justify-content-end">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a style="font-weight: bolder;" class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a style="font-weight: bolder;" class="nav-link" href="{% url 'account_login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="font-weight: bolder;" class="nav-link" href="{% url 'account_signup' %}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% block assignment_content %}
+    {% endblock %}
+</body>
+
+</html>

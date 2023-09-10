@@ -1,0 +1,135 @@
+{% extends 'main/gb_base.html' %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block extraHead %}
+<title>
+    List of demanding blogs 
+</title>
+<meta name="description" content="List of demanding blogs">
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <a href=" {% url 'blog-demand-create' %}"
+        style="width: 100%;margin-top: 20px;padding:10px;background-color:#24bacf;font-weight:bold;color: white;" class="btn">
+        Suggest Blog Title
+    </a>
+</div>
+
+<div class="container"></div>
+
+<div class="container d-flex justify-content-center">
+    <div class="row mt-4" style="width: 99%;overflow: auto;">
+        <table class="table  table-striped">
+            <thead style="background-color: #24bacf;color: #f6f6f6;">
+                <tr>
+
+                    <th style="width: 50%;">Title</th>
+                    <th style="width: 25%;">Upvotes</th>
+                    <th style="width: 25%;">Writer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in object_list %}
+                <tr>
+                    <th style="width: 50%;">
+                        <a style="color: #0645AD;"
+                            href="" title="">
+                            {{row.title}}
+                        </a>
+                    </th>
+                    <th style="width: 25%;">
+                        <form class="like-dislike-form" onsubmit="" data="{{row.id}}" action="{% url 'blog-demand-vote' row.id %}" method="POST">
+                            {% csrf_token %}
+                            <span id="count-{{row.id}}">{{ row.vote_count }}</span>
+                            <button type="submit" class="btn btn-primary">
+                                <i id="icon-{{row.id}}" class="fa fa-arrow-{% if row.liked %}down{% else %}up{% endif %}" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </th>
+                    <th style="width: 25%;">
+                        <a 
+                            style="text-decoration: none;" 
+                            {% if row.writer %}
+                                href="{% url 'user-profile' row.writer.slug %}"
+                            {% else %}
+                                href=""
+                            {% endif %}
+                        >
+                            {{ row.writer }}
+
+                        </a>
+                    </th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% if is_paginated %}
+<div class="container row mt-3">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+</div>
+
+<script>
+    $(".like-dislike-form").on('submit',function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var id = form.attr('data')
+        $.ajax({
+            url: form.attr('action'),
+            type : "POST",
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                if (data) {
+                    $(`#count-${id}`).text(data['number_of_votes']);
+                    if(data['action'] === 'Like'){
+                        document.getElementById("icon-"+id).className = "fa fa-arrow-down";
+                    }
+                    else{
+                        document.getElementById("icon-"+id).className = "fa fa-arrow-up";
+                    }
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                $('body').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>");
+            }
+        });
+    });
+  </script>
+{% endblock %}
+
+
+{% block extraScript %}
+
+{% endblock %}
