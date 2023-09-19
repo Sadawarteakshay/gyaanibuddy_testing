@@ -6,8 +6,20 @@ beforeAll(async () => {
   
 afterAll(async () => driver.quit())
 
-test('go to gyaanibuddy domain', async () => {
-    await driver.get('https://www.google.com/');
-	await driver.findElement(By.xpath("//textarea[@id='APjFqb']")).sendKeys('bradley cooper venice film festival', Key.RETURN);
-	await driver.wait(until.titleIs('bradley cooper venice film festival - Google Search'), 5000);
+test('social media links', async () => {
+    await driver.get('https://www.gyaanibuddy.com/');
+	home_button = await driver.findElement(By.xpath("//a[@class='youtube']"));
+    
+    await home_button.click();
+
+	await driver.wait(until.titleIs('Gyaani Buddy - YouTube'), 5000);
+});
+
+test('social media links 2', async () => {
+    await driver.get('https://www.gyaanibuddy.com/');
+	home_button = await driver.findElement(By.xpath("//a[@class='youtube']"));
+    
+    await home_button.click();
+
+	await driver.wait(until.titleIs('Gyaani Buddy - YouTube'), 5000);
 });
