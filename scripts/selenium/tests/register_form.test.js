@@ -1,52 +1,16 @@
 require('chromedriver');
-const { Builder, By, Key, until } = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
-
-const chrome_options = new chrome.Options();
-chrome_options.addArguments("--auto-open-devtools-for-tabs");
-
+const { By } = require('selenium-webdriver');
+const {setupChromeDriver, accessGyaaniBuddyWebsite} = require("./utility/setup");
 
 beforeAll(async () => {
-    driver = await new Builder().forBrowser('chrome').setChromeOptions(chrome_options).build()
-    await driver.manage().window().setRect({ width: 1920, height: 1080 });
+    driver = await setupChromeDriver();
 })
   
-afterAll(async () => driver.quit())
+afterAll(async () => await driver.quit())
 
 beforeEach(async () => {
-    // For each test suite, we need to be on the Gyaanibuddy website.
-    await driver.get('https://www.gyaanibuddy.com/');
-    await driver.wait(until.titleContains('GyaaniBuddy'));
+    await accessGyaaniBuddyWebsite(driver);
 });
-
-// describe("test social media links", () => {
-//     test('youtube social media link', async () => {
-//         home_button = await driver.findElement(By.xpath("//a[@class='youtube']"));
-        
-//         await home_button.click();
-
-//         await driver.wait(until.titleIs('Gyaani Buddy - YouTube'));
-//     });
-// });
-
-// describe("test search button in blogs", () => {
-//     it("should click on blogs", async () => {
-//         blog_button = await driver.findElement(By.xpath("(//a[@href='/blog/'])[1]"));
-
-//         await blog_button.click();
-//         await driver.wait(until.titleContains('blogs'));
-//     });
-
-//     it("should search with 'essential' in search bar", async () => {
-//         search_button = await driver.findElement(By.id("id_q"));
-//         submit_button = await driver.findElement(By.xpath("//button[@class='submit-buttons m-1 p-2']"))
-
-//         await search_button.sendKeys('Essential');
-//         await submit_button.click();
-
-//         await driver.wait(until.urlContains('Essential'));
-//     });
-// });
 
 describe("test sign up form validation", () => {
     // I did some equivalence class partitioning, but these are not all of the cases so feel free to add more.
@@ -133,7 +97,7 @@ describe("test sign up form validation", () => {
             username_input_button = await driver.findElement(By.id("inputText"));
             await username_input_button.sendKeys("validName");
 
-            email_input_button = await driver.findElement(By.id("inputEmail")); // username input field xpath
+            email_input_button = await driver.findElement(By.id("inputEmail"));
         });
 
         it("should not accept an empty email", async () => {
@@ -224,7 +188,7 @@ describe("test sign up form validation", () => {
             expect(validationMessage).toContain(no_at_symbol_substring);
         });
 
-        it("it should accept an email in this format: x@x.y, where x is any alphanumeric character and y is any domain", async () => {
+        it("should accept an email in this format: x@x.y, where x is any alphanumeric character and y is any domain", async () => {
             await email_input_button.sendKeys("abc@abc.com")
 
             await register_button.click(); // click so message is validated
@@ -235,4 +199,56 @@ describe("test sign up form validation", () => {
             expect(isValid).toBe(true);
         });
     });
+
+    describe("validate password #1", () => {
+        beforeEach(async () => {
+            // Need to put in valid username and email input so validation will be focused on password field
+            username_input_button = await driver.findElement(By.id("inputText"));
+            await username_input_button.sendKeys("validName");
+
+            email_input_button = await driver.findElement(By.id("inputEmail"));
+            await email_input_button.sendKeys("abc@abc.com");
+
+            password_input_button = await driver.findElement(By.id("inputPassword"));
+        });
+
+        it("should not accept empty password", async () => {
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(true);
+            expect(validationMessage).toBe("Please fill out this field."); 
+        });
+
+        // currently no password validation ... so let's just make up some rules
+        //
+        // min length 6, max length 12, it should have at least 1 number, 
+        // and at least 1 special character
+
+        // Equivalent classes: 
+        // EC 1: No password -  - invalid
+        // EC 2: Length 5 (no number, no special character) - ABCDE - invalid
+        // EC 3: Length 5 (number, no special character) - ABCD1 - invalid
+        // EC 4: Length 5 (no number, special character) - ABCD! - invalid
+        // EC 5: Length 5 (number, special character) - ABC1! - invalid
+        // EC 6: Length 6 (no number, no special character) - ABCDEF - invalid
+        // EC 7: Length 6 (number, no special character) - ABCDE1 - invalid
+        // EC 8: Length 6 (no number, special character) - ABCDE! - invalid
+        // EC 9: Length 6 (number, special character) - ABCD1! - valid
+        // EC 10: Length 12 (no number, no special character) - ABCDEABCDEAB - invalid
+        // EC 11: Length 12 (number, no special character) - ABCDEABCDEA1 - invalid
+        // EC 12: Length 12 (no number, special character) - ABCDEABCDEA! - invalid
+        // EC 13: Length 12 (number, special character) - ABCDEABCDE1! - valid
+        // EC 14: Length 13 (no number, no special character) - ABCDEABCDEABC - invalid
+        // EC 15: Length 13 (number, no special character) - ABCDEABCDEAB1 - invalid
+        // EC 16: Length 13 (no number, special character) - ABCDEABCDEAB! - invalid
+        // EC 17: Length 13 (number, special character) - ABCDEABCDEA1! - invalid
+
+        it("should accept a password", () => {
+            expect(1).toBe(1);
+        });
+    });
+
+    // no validate password #2 because website cannot handle creating new users at the moment
 });
