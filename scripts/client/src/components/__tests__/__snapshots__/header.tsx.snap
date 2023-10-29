@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header render snapshot test 1`] = `
+<div
+  className="css-14estru"
+>
+  <img
+    alt="Space dog"
+    className="css-z91ymt"
+    src="dog-3.png"
+  />
+  <div>
+    <h2>
+      Space Explorer
+    </h2>
+    <h5
+      className="css-1sykydy"
+    >
+      ée
+    </h5>
+  </div>
+</div>
+`;

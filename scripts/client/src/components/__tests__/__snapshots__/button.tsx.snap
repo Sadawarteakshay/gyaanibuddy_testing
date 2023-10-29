@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Button renders without error 1`] = `
+exports[`Button render snapshot test 1`] = `
 <button
   className="css-wwcn44"
 >
