@@ -28,11 +28,11 @@ describe('Launch Detail View', () => {
     render(LaunchElement);
 
     // Snapshot test - ensure button has no unsuspecting changes between commits
-    const ButtonTree = renderer
+    const ElementTree = renderer
       .create(LaunchElement)
       .toJSON();
 
-    expect(ButtonTree).toMatchSnapshot();
+    expect(ElementTree).toMatchSnapshot();
   });
 
   it('should contain correct rocket name and rocket type', () =>{

@@ -13,6 +13,8 @@ describe('Footer', () => {
     renderApollo(<Footer />);
   });
 
+  // Unable to achieve snapshot tests for this element because cannot invoke render on the footer
+
   it('contains Home, Cart, and Profile MenuItems', async () => {
     const HelloWorldButton = <Footer />;
     
