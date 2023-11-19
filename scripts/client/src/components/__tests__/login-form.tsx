@@ -19,4 +19,17 @@ describe('Login Form', () => {
 
     expect(loginFormTree).toMatchSnapshot();
   });
+
+  it('render snapshot', () => {
+    const LoginFormElement = <LoginForm login={() => {}}/>;
+
+    render(LoginFormElement);
+
+    // Snapshot test - ensure button has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(LoginFormElement)
+      .toJSON();
+
+    expect(ElementTree).toMatchSnapshot();
+  });
 });

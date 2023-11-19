@@ -1,7 +1,10 @@
 import React from 'react';
 
-import { renderApollo, cleanup, waitFor } from '../../test-utils';
+import { render, renderApollo, cleanup, waitFor } from '../../test-utils';
 import CartItem, { GET_LAUNCH } from '../cart-item';
+import renderer from 'react-test-renderer';
+import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider } from '@apollo/react-testing'
 
 const mockLaunch = {
   __typename: 'Launch',
@@ -20,6 +23,32 @@ const mockLaunch = {
 describe('cart item', () => {
   // automatically unmount and cleanup DOM after the test is finished.
   afterEach(cleanup);
+
+  it('render snapshot', async () => {
+    let mocks = [
+      {
+        request: { query: GET_LAUNCH, variables: { launchId: '1' } },
+        result: { data: { launch: mockLaunch } },
+      },
+    ];
+
+    const CartItemElement = <CartItem launchId={'1'} />;
+
+    // see https://stackoverflow.com/questions/70805929/how-to-fix-error-usehref-may-be-used-only-in-the-context-of-a-router-compon
+    // Used this as well https://www.apollographql.com/docs/react/development-testing/testing/
+    render(<MockedProvider mocks={mocks} addTypename={false}>
+      {CartItemElement}
+    </MockedProvider>);
+    
+    // Todo somehow wait for cart to load
+
+    // Snapshot test - ensure element has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(<MockedProvider mocks={mocks} addTypename={false}>{CartItemElement}</MockedProvider>)
+      .toJSON();
+      
+    expect(ElementTree).toMatchSnapshot();
+  });
 
   it('queries item and renders without error', () => {
     let mocks = [

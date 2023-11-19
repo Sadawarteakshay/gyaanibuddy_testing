@@ -18,8 +18,6 @@ describe('Button', () => {
   it('render snapshot test', () => {
     const HelloWorldButton = <Button>Hello World</Button>;
 
-    render(HelloWorldButton);
-
     // Snapshot test - ensure button has no unsuspecting changes between commits
     const ButtonTree = renderer
       .create(HelloWorldButton)
@@ -34,7 +32,7 @@ describe('Button', () => {
     const validMessage = "";
 
     const { container } = render(buttonTest);
-
+    
     const firstElement = container.firstChild;
 
     expect(firstElement?.nodeName).toBe(nodeType);

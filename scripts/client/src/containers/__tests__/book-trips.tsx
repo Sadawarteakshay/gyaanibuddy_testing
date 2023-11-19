@@ -1,8 +1,11 @@
 import React from 'react';
 
-import { renderApollo, cleanup, fireEvent, waitFor } from '../../test-utils';
+import { render, renderApollo, cleanup, fireEvent, waitFor } from '../../test-utils';
 import BookTrips, { BOOK_TRIPS } from '../book-trips';
 import { GET_LAUNCH } from '../cart-item';
+import renderer from 'react-test-renderer';
+import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider } from '@apollo/react-testing'
 
 const mockLaunch = {
   __typename: 'Launch',
@@ -21,6 +24,20 @@ const mockLaunch = {
 describe('book trips', () => {
   // automatically unmount and cleanup DOM after the test is finished.
   afterEach(cleanup);
+
+  it('render snapshot', () => {
+    const BookTripElement = <BookTrips cartItems={[]} />;
+
+    // see https://stackoverflow.com/questions/70805929/how-to-fix-error-usehref-may-be-used-only-in-the-context-of-a-router-compon
+    render(BookTripElement, {wrapper: MockedProvider});
+    
+    // Snapshot test - ensure button has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(<MockedProvider>{BookTripElement}</MockedProvider>)
+      .toJSON();
+
+    expect(ElementTree).toMatchSnapshot();
+  });
 
   it('renders without error', () => {
     const { getByTestId } = renderApollo(<BookTrips cartItems={[]} />);

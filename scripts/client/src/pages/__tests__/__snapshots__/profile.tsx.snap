@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Profile Page render snapshot 1`] = `
+<svg
+  className="css-kahotv"
+>
+  logo.svg
+</svg>
+`;

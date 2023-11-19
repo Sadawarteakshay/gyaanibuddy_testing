@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`book trips render snapshot 1`] = `
+<button
+  className="css-wwcn44"
+  data-testid="book-button"
+  onClick={[Function]}
+>
+  Book All
+</button>
+`;
