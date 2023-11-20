@@ -11,6 +11,9 @@ This is basically a basic framework for testing via Selenium and NPM. Once you'v
 the chrome webdriver)
 3. Run the command "npm test" to run the selenium tests, it's recommended that you don't click on anything (you may interrupt the flow of the end to end tests)
 
+*optional*
+4. Run the command "npm test_seq" to run the selenium tests sequentially instead of running them in parallel
+
 # OK, I don't understand the commands for selenium. Some context?
 
 This is made with javascript and the NPM library, but the test runner is pretty much jest.
