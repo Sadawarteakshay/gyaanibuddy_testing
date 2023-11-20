@@ -29,3 +29,6 @@ To run the selenium tests:
 # Q/A
 Getting an error when running Selenium tests, the test browser won't open
 1. The selenium framework was setup to automatically install the latest Chromedriver to be compatible with the latest version of Chrome. There may be a period of time where the latest Chromedriver may not be up to date with the latest version of Chrome, so you may run into some issues running the tests if this is the case. This may be resolved by manually installing the latest version of Chromedriver, but one can also intentionally downgrade their version of Chrome. See (https://googlechromelabs.github.io/chrome-for-testing/ and https://chromedriver.chromium.org/downloads for the various Chromedriver versions).
+
+The Selenium / unit tests won't even start up, running "npm run test" doesn't work!
+1. Your working directory would need to be within the working directory ... so either make it the client folder (for unit tests), or the selenium folder (for the selenium tests).
