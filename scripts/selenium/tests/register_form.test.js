@@ -1,4 +1,3 @@
-require('chromedriver');
 const { By } = require('selenium-webdriver');
 const {setupChromeDriver, accessGyaaniBuddyWebsite} = require("./utility/setup");
 

@@ -1,6 +1,4 @@
-require('chromedriver');
-const { By, Key, until, WebDriver, WebElementPromise } = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
+const { By, until, WebDriver, WebElementPromise } = require('selenium-webdriver');
 
 /**
  * @param {WebDriver} driver The webdriver element
