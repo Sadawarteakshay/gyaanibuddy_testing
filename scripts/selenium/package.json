@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test_seq" : "jest --runInBand"
+    "test": "jest --verbose",
+    "test_seq" : "jest -i --verbose"
   },
   "keywords": [],
   "author": "",

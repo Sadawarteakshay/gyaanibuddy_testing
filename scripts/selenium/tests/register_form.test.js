@@ -5,7 +5,10 @@ beforeAll(async () => {
     driver = await setupChromeDriver();
 })
   
-afterAll(async () => await driver.quit())
+afterAll(async () => {
+    await driver.close();
+    await driver.quit();
+})
 
 beforeEach(async () => {
     await accessGyaaniBuddyWebsite(driver);
@@ -211,15 +214,6 @@ describe("test sign up form validation", () => {
             password_input_button = await driver.findElement(By.id("inputPassword"));
         });
 
-        it("should not accept empty password", async () => {
-            let validationMessage = await password_input_button.getProperty("validationMessage");
-            let validationStatus = await password_input_button.getProperty("validity");
-            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
-
-            expect(isValueMissing).toBe(true);
-            expect(validationMessage).toBe("Please fill out this field."); 
-        });
-
         // currently no password validation ... so let's just make up some rules
         //
         // min length 6, max length 12, it should have at least 1 number, 
@@ -244,8 +238,254 @@ describe("test sign up form validation", () => {
         // EC 16: Length 13 (no number, special character) - ABCDEABCDEAB! - invalid
         // EC 17: Length 13 (number, special character) - ABCDEABCDEA1! - invalid
 
-        it("should accept a password", () => {
-            expect(1).toBe(1);
+        it("should not accept No password", async () => {
+            // EC1
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(true);
+            expect(validationMessage).toBe("Please fill out this field."); 
+        });
+
+        it("should not accept Length 5 (no number, no special character)", async () => {
+            // EC2
+            await password_input_button.sendKeys("ABCDE")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 5 (number, no special character)", async () => {
+            // EC3
+            await password_input_button.sendKeys("ABCD1")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 5 (no number, special character)", async () => {
+            // EC4
+            await password_input_button.sendKeys("ABCD!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 5 (number, special character)", async () => {
+            // EC5
+            await password_input_button.sendKeys("ABC1!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 6 (no number, no special character)", async () => {
+            // EC6
+            await password_input_button.sendKeys("ABCDEF")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 6 (number, no special character)", async () => {
+            // EC7
+            await password_input_button.sendKeys("ABCDE1")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 6 (no number, special character)", async () => {
+            // EC8
+            await password_input_button.sendKeys("ABCDE!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should accept Length 6 (number, special character)", async () => {
+            // EC9
+            await password_input_button.sendKeys("ABCD1!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(true);
+        });
+
+        it("should not accept Length 12 (no number, no special character)", async () => {
+            // EC10
+            await password_input_button.sendKeys("ABCDEABCDEAB")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 12 (number, no special character)", async () => {
+            // EC11
+            await password_input_button.sendKeys("ABCDEABCDEA1")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 12 (no number, special character)", async () => {
+            // EC12
+            await password_input_button.sendKeys("ABCDEABCDEA")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should accept Length 12 (number, special character)", async () => {
+            // EC13
+            await password_input_button.sendKeys("ABCDEABCDE1!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(true);
+        });
+
+        it("should not accept Length 13 (no number, no special character)", async () => {
+            // EC14
+            await password_input_button.sendKeys("ABCDEABCDEABC")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 13 (number, no special character)", async () => {
+            // EC15
+            await password_input_button.sendKeys("ABCDEABCDEAB1")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 13 (no number, special character)", async () => {
+            // EC16
+            await password_input_button.sendKeys("ABCDEABCDEAB!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
+        });
+
+        it("should not accept Length 13 (number, special character)", async () => {
+            // EC17
+            await password_input_button.sendKeys("ABCDEABCDEA1!")
+            await register_button.click();
+
+            let validationMessage = await password_input_button.getProperty("validationMessage");
+            let validationStatus = await password_input_button.getProperty("validity");
+            let isValid = validationStatus["valid"]; // validationStatus is an object
+            let isValueMissing = validationStatus["valueMissing"]; // validationStatus is an object
+
+            expect(isValueMissing).toBe(false);
+            expect(isValid).toBe(false);
+            expect(validationMessage).toBe("Password should be between 6 to 12 characters, and has at least 1 number and 1 special character."); 
         });
     });
 

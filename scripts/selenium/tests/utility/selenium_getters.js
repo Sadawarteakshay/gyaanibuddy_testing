@@ -45,4 +45,4 @@ async function getElementsByXPath(driver, xpath, waitUntilTime) {
     return elements;
 }
 
-module.exports = { getElementById, getElementByXPath, getElementsByXPath }
+module.exports = { getElementById, getElementByXPath, getElementsByXPath, getElementByXPathNoVis }

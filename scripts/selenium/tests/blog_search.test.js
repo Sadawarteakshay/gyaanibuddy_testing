@@ -6,7 +6,10 @@ beforeAll(async () => {
     driver = await setupChromeDriver();
 })
   
-afterAll(async () => await driver.quit())
+afterAll(async () => {
+    await driver.close();
+    await driver.quit();
+})
 
 // This whole describe block should be run sequentially, or at least
 // we should ensure that we're currently on the blog page in order to run searches and whatever

@@ -30,7 +30,7 @@ async function setupChromeDriver() {
 async function accessGyaaniBuddyWebsite(driver) {
     // For each test suite, we need to be on the Gyaanibuddy website.
     await driver.get('https://www.gyaanibuddy.com/');
-    await driver.wait(until.titleContains('GyaaniBuddy'));
+    await driver.wait(until.titleContains('GyaaniBuddy | Everything'));
     return driver;
 }
 
