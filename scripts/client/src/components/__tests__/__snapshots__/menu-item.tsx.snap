@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Menu Item render snapshot 1`] = `
+<a
+  className="css-j1pn2v"
+  href="/wow"
+  onClick={[Function]}
+/>
+`;

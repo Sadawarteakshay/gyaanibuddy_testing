@@ -1,42 +1,32 @@
-require('chromedriver');
 const { By, until } = require('selenium-webdriver');
 const {setupChromeDriver, accessGyaaniBuddyWebsite} = require("./utility/setup");
+const { getElementByXPathNoVis } = require('./utility/selenium_getters');
+
+let ten_seconds = 10000;
 
 beforeAll(async () => {
     driver = await setupChromeDriver();
 })
   
-afterAll(async () => await driver.quit())
-
-beforeEach(async () => {
-    await accessGyaaniBuddyWebsite(driver);
-});
+afterAll(async () => {
+    await driver.close();
+    await driver.quit();
+})
 
 describe("test social media links", () => {
-    test('youtube social media link', async () => {
-        home_button = await driver.findElement(By.xpath("//a[@class='youtube']"));
+    beforeEach(async () => {
+        await accessGyaaniBuddyWebsite(driver);
+    });
+    
+    test('facebook social media link', async () => {
+        media_button = await driver.findElement(By.xpath("//a[@class='facebook']"));
         
-        await home_button.click();
+        await media_button.click();
 
-        await driver.wait(until.titleIs('Gyaani Buddy - YouTube'));
-    });
-});
+        await driver.wait(until.titleIs('Gyaani Buddy | Facebook'));
 
-describe("test search button in blogs", () => {
-    it("should click on blogs", async () => {
-        blog_button = await driver.findElement(By.xpath("(//a[@href='/blog/'])[1]"));
+        elem = await getElementByXPathNoVis(driver, "//span[contains(text(), 'Facebook')]", ten_seconds);
 
-        await blog_button.click();
-        await driver.wait(until.titleContains('blogs'));
-    });
-
-    it("should search with 'essential' in search bar", async () => {
-        search_button = await driver.findElement(By.xpath("//input[@class='form-control' and @id='id_q']"));
-        submit_button = await driver.findElement(By.xpath("//button[@class='submit-buttons m-1 p-2']"))
-
-        await search_button.sendKeys('Essential');
-        await submit_button.click();
-
-        await driver.wait(until.urlContains('Essential'));
+        expect(elem).toBeTruthy(); // we can find the element
     });
 });

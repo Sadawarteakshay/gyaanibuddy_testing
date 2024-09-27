@@ -1,12 +1,28 @@
 import React from 'react';
 
-import { renderApollo, cleanup, waitFor } from '../../test-utils';
+import { render, renderApollo, cleanup, waitFor } from '../../test-utils';
 import ActionButton from '../action-button';
 import { cartItemsVar } from '../../cache';
+import renderer from 'react-test-renderer';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('action button', () => {
   // automatically unmount and cleanup DOM after the test is finished.
   afterEach(cleanup);
+
+  it('render snapshot', () => {
+    const ActionButtonElement = <ActionButton />;
+
+    // see https://stackoverflow.com/questions/70805929/how-to-fix-error-usehref-may-be-used-only-in-the-context-of-a-router-compon
+    render(ActionButtonElement, {wrapper: MemoryRouter});
+    
+    // Snapshot test - ensure button has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(<MemoryRouter>{ActionButtonElement}</MemoryRouter>)
+      .toJSON();
+
+    expect(ElementTree).toMatchSnapshot();
+  });
 
   it('renders without error', () => {
     const { getByTestId } = renderApollo(<ActionButton />);

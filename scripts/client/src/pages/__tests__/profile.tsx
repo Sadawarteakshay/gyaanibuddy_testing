@@ -1,7 +1,10 @@
 import React from 'react';
 
-import { renderApollo, cleanup, waitFor } from '../../test-utils';
+import { render, renderApollo, cleanup, waitFor } from '../../test-utils';
 import Profile, { GET_MY_TRIPS } from '../profile';
+import renderer from 'react-test-renderer';
+import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider } from '@apollo/react-testing'
 
 const mockLaunch = {
   __typename: 'Launch',
@@ -43,5 +46,22 @@ describe('Profile Page', () => {
 
     // if the profile renders, it will have the list of missions booked
     await waitFor(() => getByText(/test mission/i));
+  });
+
+  it('render snapshot', async () => {
+    const mocks = [
+      {
+        request: { query: GET_MY_TRIPS },
+        result: { data: { me: mockMe } },
+      },
+    ];
+
+    const ProfileElement = <Profile />;
+
+    // Snapshot test - ensure element has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(<MockedProvider mocks={mocks} addTypename={false}>{ProfileElement}</MockedProvider>);
+      
+    expect(ElementTree).toMatchSnapshot();
   });
 });

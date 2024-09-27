@@ -1,4 +1,5 @@
 import React from 'react';
+import renderer from 'react-test-renderer';
 
 import { render, cleanup } from '../../test-utils';
 import LoginForm from '../login-form';
@@ -8,6 +9,27 @@ describe('Login Form', () => {
   afterEach(cleanup);
 
   it('renders without error', () => {
-    render(<LoginForm login={() => {}}/>);
+    const loginFormObject = <LoginForm login={() => {}}/>;
+
+    render(loginFormObject);
+
+    const loginFormTree = renderer
+      .create(loginFormObject)
+      .toJSON();
+
+    expect(loginFormTree).toMatchSnapshot();
+  });
+
+  it('render snapshot', () => {
+    const LoginFormElement = <LoginForm login={() => {}}/>;
+
+    render(LoginFormElement);
+
+    // Snapshot test - ensure button has no unsuspecting changes between commits
+    const ElementTree = renderer
+      .create(LoginFormElement)
+      .toJSON();
+
+    expect(ElementTree).toMatchSnapshot();
   });
 });

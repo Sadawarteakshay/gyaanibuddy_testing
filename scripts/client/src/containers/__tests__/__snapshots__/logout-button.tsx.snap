@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`logout button render snapshot 1`] = `
+<button
+  className="css-qfnldk"
+  data-testid="logout-button"
+  onClick={[Function]}
+>
+  <svg>
+    exit.svg
+  </svg>
+  Logout
+</button>
+`;

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`action button render snapshot 1`] = `
+<div>
+  <button
+    className="css-wwcn44"
+    data-testid="action-button"
+    onClick={[Function]}
+  >
+    Add to Cart
+  </button>
+</div>
+`;
